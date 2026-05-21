@@ -53,6 +53,22 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
         query += " AND price <= %s"
         params.append(filters.max_price)
 
+    if filters.min_yield is not None:
+        query += " AND yield >= %s"
+        params.append(filters.min_yield)
+
+    if filters.max_yield is not None:
+        query += " AND yield <= %s"
+        params.append(filters.max_yield)
+
+    if filters.maturity_from is not None:
+        query += " AND maturity_date >= %s"
+        params.append(filters.maturity_from)
+
+    if filters.maturity_to is not None:
+        query += " AND maturity_date <= %s"
+        params.append(filters.maturity_to)
+
     query += f" ORDER BY {filters.sort_by} {filters.order}"
     query += " LIMIT %s OFFSET %s"
     params.extend([filters.limit, filters.offset])

@@ -38,6 +38,18 @@ class InstrumentFilter(BaseModel):
     max_price: Optional[float] = Field(
         default=None, ge=0, description="Максимальная цена (>= 0)"
     )
+    min_yield: Optional[float] = Field(
+        default=None, ge=0, description="Минимальная доходность (>= 0)"
+    )
+    max_yield: Optional[float] = Field(
+        default=None, ge=0, description="Максимальная доходность (>= 0)"
+    )
+    maturity_from: Optional[date] = Field(
+        default=None, description="Срок погашения от (YYYY-MM-DD)"
+    )
+    maturity_to: Optional[date] = Field(
+        default=None, description="Срок погашения до (YYYY-MM-DD)"
+    )
     sort_by: str = Field(
         default="ticker", description="Поле сортировки: ticker, price, volume, name"
     )
