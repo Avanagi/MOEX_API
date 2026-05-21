@@ -1,12 +1,15 @@
 import psycopg2
-from app.config import settings
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def get_connection():
     return psycopg2.connect(
-        host=settings.db_host,
-        port=settings.db_port,
-        user=settings.db_user,
-        password=settings.db_password,
-        dbname=settings.db_name
+        host=os.getenv("DB_HOST", "localhost"),
+        port=int(os.getenv("DB_PORT", 5432)),
+        user=os.getenv("DB_USER", "postgres"),
+        password=os.getenv("DB_PASSWORD", "postgres"),
+        dbname=os.getenv("DB_NAME", "moex"),
     )
