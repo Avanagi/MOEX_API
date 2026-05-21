@@ -18,6 +18,9 @@ COLUMNS = [
     "maturity_date",
     "market_cap",
     "issuer",
+    "volatility",
+    "strike_price",
+    "option_type",
 ]
 
 
@@ -27,9 +30,10 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
     cursor = conn.cursor()
 
     query = """
-        SELECT ticker, name, type, sector, price, volume, currency,
-               updated_at, yield, maturity_date, market_cap, issuer
-        FROM instruments WHERE 1=1
+    SELECT ticker, name, type, sector, price, volume, currency,
+           updated_at, yield, maturity_date, market_cap, issuer,
+           volatility, strike_price, option_type
+    FROM instruments WHERE 1=1
     """
     params = []
 
@@ -69,7 +73,8 @@ async def search_instruments(q: str):
     cursor.execute(
         """
         SELECT ticker, name, type, sector, price, volume, currency,
-               updated_at, yield, maturity_date, market_cap, issuer
+        updated_at, yield, maturity_date, market_cap, issuer,
+        volatility, strike_price, option_type
         FROM instruments
         WHERE name ILIKE %s OR ticker ILIKE %s
         LIMIT 50
@@ -97,7 +102,8 @@ async def get_instrument(ticker: str):
     cursor.execute(
         """
         SELECT ticker, name, type, sector, price, volume, currency,
-               updated_at, yield, maturity_date, market_cap, issuer
+        updated_at, yield, maturity_date, market_cap, issuer,
+        volatility, strike_price, option_type
         FROM instruments WHERE ticker = %s
     """,
         [ticker.upper()],

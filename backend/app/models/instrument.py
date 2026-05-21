@@ -16,10 +16,14 @@ class InstrumentOut(BaseModel):
     maturity_date: Optional[date] = None
     market_cap: Optional[int] = None
     issuer: Optional[str] = None
+    volatility: Optional[float] = None
+    strike_price: Optional[float] = None
+    option_type: Optional[str] = None
 
     class Config:
         from_attributes = True
         populate_by_name = True
+
 
 class InstrumentFilter(BaseModel):
     type: Optional[str] = Field(
