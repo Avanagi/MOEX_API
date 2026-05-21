@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: moex_db
+    restart: always
+    environment:
+      POSTGRES_DB: moex_db
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - moex_network
+
+  cache:
+    image: redis:7-alpine
+    container_name: moex_cache
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - moex_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: moex_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres_user:postgres_password@db:5432/moex_db
+      - REDIS_URL=redis://cache:6379/0
+    depends_on:
+      - db
+      - cache
+    networks:
+      - moex_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: moex_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - moex_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  moex_network:
+    driver: bridge
