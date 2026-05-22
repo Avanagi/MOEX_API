@@ -47,6 +47,24 @@ services:
     networks:
       - moex_network
 
+  collector:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: moex_collector
+    restart: always
+    command: python collector/moex_collector.py
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres_user
+      - DB_PASSWORD=postgres_password
+      - DB_NAME=moex_db
+    depends_on:
+      - db
+    networks:
+      - moex_network
+
   frontend:
     build:
       context: ./frontend
