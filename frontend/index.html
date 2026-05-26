@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOEX</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="ticker-strip">
+        <div class="page ticker-line" id="tickerLine"></div>
+    </div>
+
+    <header class="site-header">
+        <div class="page">
+            <div class="main-nav">
+                <a class="logo" href="#" aria-label="MOEX">
+                    <span>MOEX</span>
+                    <small>Московская<br>Биржа</small>
+                </a>
+                <nav class="nav-links" aria-label="Главное меню">
+                    <a href="#ipo">IPO</a>
+                    <a class="is-current" href="#investors">Инвесторам</a>
+                    <a href="#products">Эмитентам</a>
+                    <a href="#market">Рыночная информация</a>
+                    <a href="#group">О бирже</a>
+                </nav>
+                <div class="header-actions">
+                    <button class="icon-button" aria-label="Поиск">⌕</button>
+                    <button class="icon-button" aria-label="Корзина">⌑</button>
+                    <div class="time-box">
+                        <span>Четверг</span>
+                        <b>21 мая 20:04</b>
+                    </div>
+                    <button class="red-button">Войти</button>
+                </div>
+            </div>
+            <nav class="market-nav" aria-label="Разделы рынка">
+                <a href="#market">Индексы</a>
+                <a href="#market">Фондовый рынок</a>
+                <a href="#market">Срочный рынок</a>
+                <a href="#products">Рынок СПФИ</a>
+                <a href="#calendar">Денежный рынок</a>
+                <a href="#products">Рынок драгоценных металлов</a>
+                <a href="#market">Валютный рынок</a>
+                <a href="#news">Еще</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="page promo-grid" id="investors">
+            <article class="promo-card promo-main">
+                <div>
+                    <h1>Участвуйте в движении процентных ставок</h1>
+                    <p>Новые фьючерсы на индекс RUONIA уже в торгах</p>
+                    <button class="red-button">Торговать</button>
+                </div>
+                <div class="rate-visual" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                    <strong>%</strong>
+                </div>
+            </article>
+            <article class="promo-card">
+                <div class="small-visual blue"></div>
+                <h2>Лучший частный инвестор 2026</h2>
+                <p>Призовой фонд 100 млн рублей</p>
+            </article>
+            <article class="promo-card">
+                <div class="small-visual red"></div>
+                <h2>Крипто без криптобиржи</h2>
+                <p>Новые фьючерсы на криптоиндексы уже в торгах</p>
+            </article>
+            <article class="promo-card wide">
+                <div>
+                    <h2>Время покупать драгметаллы</h2>
+                    <p>на Московской бирже</p>
+                </div>
+                <div class="gold-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+            </article>
+        </section>
+
+        <section class="page section" id="market">
+            <h2 class="section-title">Карта рынка</h2>
+            <div class="heatmap-layout">
+                <div>
+                    <h3 class="map-title">Акции</h3>
+                    <div class="heatmap" id="sharesMap"></div>
+                </div>
+                <div>
+                    <h3 class="map-title">Фьючерсы</h3>
+                    <div class="heatmap" id="futuresMap"></div>
+                </div>
+            </div>
+            <div class="market-note">
+                <p>Получите доступ к углубленной аналитике MOEX: рыночные дисбалансы, индексы концентрации, открытый
+                    интерес и еще более 50 индикаторов</p>
+                <button class="light-button">Поделиться картой</button>
+                <button class="red-button">Попробовать</button>
+            </div>
+            <p class="caption">Данные отображаются с задержкой в 15 минут.</p>
+        </section>
+
+        <section class="page section" id="products">
+            <div class="section-row">
+                <h2 class="section-title">Продукты</h2>
+                <div class="segmented" id="productTabs">
+                    <button class="is-active" data-group="popular">Популярное</button>
+                    <button data-group="investors">Инвесторам</button>
+                    <button data-group="issuers">Эмитентам</button>
+                    <button data-group="pros">Профучастникам</button>
+                </div>
+            </div>
+            <div class="product-grid" id="productGrid"></div>
+        </section>
+
+        <section class="page section trends-section">
+            <div class="section-row left">
+                <h2 class="section-title">Тенденции</h2>
+                <select id="trendSelect" class="select">
+                    <option value="indices">Индексы</option>
+                    <option value="shares">Акции</option>
+                    <option value="bonds">Облигации</option>
+                </select>
+            </div>
+            <div class="trend-tabs" id="trendTabs">
+                <button class="is-active" data-kind="shares">Акции</button>
+                <button data-kind="bonds">Облигации</button>
+                <button data-kind="pension">Пенсионные</button>
+            </div>
+            <div class="trends-grid">
+                <div class="trend-list" id="trendList"></div>
+                <div class="chart-panel">
+                    <canvas id="trendChart" width="640" height="330"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="calendar-section" id="calendar">
+            <div class="page">
+                <div class="section-row">
+                    <div class="section-row left">
+                        <h2 class="section-title">Календарь</h2>
+                        <div class="segmented dark">
+                            <button class="is-active">Торговый</button>
+                            <button>Мероприятий</button>
+                        </div>
+                    </div>
+                    <button class="light-button">Все события</button>
+                </div>
+                <div class="api-banner">
+                    <b>Календарь торговых дней также доступен по API</b>
+                    <button class="red-button">Оформить подписку</button>
+                </div>
+                <div class="calendar-card">
+                    <div class="calendar-head">
+                        <h3 id="calendarTitle">Май 2026</h3>
+                        <div class="calendar-controls">
+                            <select id="monthSelect" class="select small-select" aria-label="Месяц"></select>
+                            <select id="yearSelect" class="select small-select" aria-label="Год"></select>
+                            <button class="square-button" id="prevMonth" aria-label="Предыдущий месяц">‹</button>
+                            <button class="square-button" id="nextMonth" aria-label="Следующий месяц">›</button>
+                        </div>
+                    </div>
+                    <div class="days-row" id="daysRow"></div>
+                    <div class="events-grid" id="eventsGrid"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="page section" id="news">
+            <div class="section-row">
+                <h2 class="section-title">Новости</h2>
+                <button class="light-button">Все новости</button>
+            </div>
+            <div class="news-grid" id="newsGrid"></div>
+        </section>
+
+        <section class="page section" id="ipo">
+            <div class="section-row">
+                <h2 class="section-title">IPO на MOEX</h2>
+                <button class="red-button">Все IPO</button>
+            </div>
+            <div class="ipo-grid" id="ipoGrid"></div>
+        </section>
+
+        <section class="page section" id="metrics">
+            <h2 class="section-title">Метрики успеха</h2>
+            <div class="metrics-grid">
+                <article class="metric-card">
+                    <span>01</span>
+                    <h3>Скорость подбора</h3>
+                    <p>Пользователь быстро переходит от типа инструмента к ключевым карточкам и деталям.</p>
+                </article>
+                <article class="metric-card">
+                    <span>02</span>
+                    <h3>Понятность данных</h3>
+                    <p>Цена, изменение, сектор, объем и календарные события читаются без лишней нагрузки.</p>
+                </article>
+                <article class="metric-card">
+                    <span>03</span>
+                    <h3>Интерактивность</h3>
+                    <p>Карточки, график, календарь и вкладки дают быстрый отклик без обращения к серверу.</p>
+                </article>
+                <article class="metric-card">
+                    <span>04</span>
+                    <h3>Мобильный доступ</h3>
+                    <p>Основные сценарии доступны на телефоне: просмотр рынка, продуктов, новостей и деталей.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="page section" id="group">
+            <h2 class="section-title">MOEX Group</h2>
+            <div class="group-grid">
+                <article class="group-card large">
+                    <button class="corner-button">↗</button>
+                    <h3>Национальный клиринговый центр</h3>
+                    <p>Услуги центрального контрагента и клиринговой организации</p>
+                </article>
+                <article class="group-card large">
+                    <button class="corner-button">↗</button>
+                    <h3>Национальный расчетный депозитарий</h3>
+                    <p>Услуги центрального депозитария, расчетного банка и торгового репозитария</p>
+                </article>
+                <article class="group-card">
+                    <button class="corner-button">↗</button>
+                    <h3>Школа Московской Биржи</h3>
+                    <p>Инвестируем грамотно. Руководство для начинающих и опытных инвесторов.</p>
+                </article>
+                <article class="group-card">
+                    <button class="corner-button">↗</button>
+                    <h3>Финуслуги</h3>
+                    <p>Маркетплейс финансовых услуг от Мосбиржи.</p>
+                </article>
+                <article class="group-card">
+                    <button class="corner-button">↗</button>
+                    <h3>Венчурный фонд МБ Инновации</h3>
+                    <p>Поддержка инновационных технологий финансового рынка России.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="page footer-grid">
+            <div>
+                <a class="logo footer-logo" href="#"><span>MOEX</span><small>Московская<br>Биржа</small></a>
+                <p>Интернет-приемная</p>
+                <p>Обратный звонок</p>
+                <b>+7 495 363-32-32</b>
+                <b>+7 495 232-33-63</b>
+            </div>
+            <div>
+                <h3>Инвесторам</h3>
+                <a href="#market">Фондовый рынок</a>
+                <a href="#market">Срочный рынок</a>
+                <a href="#calendar">Денежный рынок</a>
+                <a href="#market">Валютный рынок</a>
+            </div>
+            <div>
+                <h3>Эмитентам</h3>
+                <a href="#products">Эмитенту облигаций</a>
+                <a href="#products">Эмитенту акций</a>
+                <a href="#ipo">IPO на MOEX</a>
+            </div>
+            <div>
+                <h3>Рыночная информация</h3>
+                <a href="#products">Продукты и сервисы</a>
+                <a href="#calendar">Ход торгов</a>
+                <a href="#market">Индексы</a>
+            </div>
+            <div>
+                <h3>О бирже</h3>
+                <a href="#news">Пресс-центр</a>
+                <a href="#group">MOEX Group</a>
+                <a href="#group">Контакты</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="cookie" id="cookiePanel">
+        <div class="page cookie-inner">
+            <p>На сайте осуществляется обработка пользовательских данных с использованием Cookie. Оставаясь на сайте, вы
+                соглашаетесь с условиями правил.</p>
+            <button class="link-button">Настроить</button>
+            <button class="light-button" id="acceptCookie">Согласен</button>
+        </div>
+    </div>
+
+    <div class="modal" id="instrumentModal" aria-hidden="true">
+        <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <button class="modal-close" id="closeModal" aria-label="Закрыть">×</button>
+            <p class="eyebrow" id="modalKind"></p>
+            <h2 id="modalTitle"></h2>
+            <p id="modalName"></p>
+            <div class="modal-stats">
+                <span><small>Цена</small><b id="modalPrice"></b></span>
+                <span><small>Изменение</small><b id="modalChange"></b></span>
+                <span><small>Сектор</small><b id="modalSector"></b></span>
+                <span><small>Объем</small><b id="modalVolume"></b></span>
+            </div>
+            <div class="mini-chart" id="modalChart"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
