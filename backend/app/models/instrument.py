@@ -70,7 +70,7 @@ class InstrumentFilter(BaseModel):
     @field_validator("sort_by")
     @classmethod
     def validate_sort_by(cls, v):
-        allowed = {"ticker", "price", "volume", "name"}
+        allowed = {"ticker", "price", "volume", "name", "market_cap"}
         if v not in allowed:
             raise ValueError(f"sort_by должен быть одним из: {allowed}")
         return v

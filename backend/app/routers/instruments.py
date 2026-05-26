@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List
+from typing import List, Optional
 from app.models.instrument import InstrumentOut, InstrumentFilter, InstrumentSearch
 from app.database import get_connection
 
@@ -82,22 +82,27 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
 
 
 @router.get("/instruments/search", response_model=List[InstrumentOut])
-async def search_instruments(q: str):
+async def search_instruments(q: str, type: Optional[str] = None):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute(
-        """
+    query = """
         SELECT ticker, name, type, sector, price, volume, currency,
         updated_at, yield, maturity_date, market_cap, issuer,
         volatility, strike_price, option_type
         FROM instruments
-        WHERE name ILIKE %s OR ticker ILIKE %s
-        LIMIT 50
-    """,
-        [f"%{q}%", f"%{q}%"],
-    )
+        WHERE (ticker ILIKE %s OR name ILIKE %s)
+    """
+    params = [f"%{q}%", f"%{q}%"]
 
+    if type:
+        query += " AND type = %s"
+        params.append(type)
+
+    query += " ORDER BY CASE WHEN ticker ILIKE %s THEN 0 ELSE 1 END LIMIT 50"
+    params.append(q)
+
+    cursor.execute(query, params)
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -108,6 +113,20 @@ async def search_instruments(q: str):
 @router.get("/instruments/types")
 async def get_types():
     return ["stock", "bond", "futures", "option"]
+
+
+@router.get("/instruments/count")
+async def get_count(type: Optional[str] = None):
+    conn = get_connection()
+    cursor = conn.cursor()
+    if type:
+        cursor.execute("SELECT COUNT(*) FROM instruments WHERE type = %s", [type])
+    else:
+        cursor.execute("SELECT COUNT(*) FROM instruments")
+    count = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    return {"count": count}
 
 
 @router.get("/instruments/{ticker}", response_model=InstrumentOut)
