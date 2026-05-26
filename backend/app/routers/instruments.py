@@ -69,7 +69,7 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
         query += " AND maturity_date <= %s"
         params.append(filters.maturity_to)
 
-    query += f" ORDER BY {filters.sort_by} {filters.order}"
+    query += f" ORDER BY CASE WHEN price IS NULL THEN 1 ELSE 0 END, {filters.sort_by} {filters.order}"
     query += " LIMIT %s OFFSET %s"
     params.extend([filters.limit, filters.offset])
 
