@@ -82,7 +82,12 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
 
 
 @router.get("/instruments/search", response_model=List[InstrumentOut])
-async def search_instruments(q: str, type: Optional[str] = None):
+async def search_instruments(
+    q: str,
+    type: Optional[str] = None,
+    sort_by: Optional[str] = None,
+    order: Optional[str] = None,
+):
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -99,8 +104,14 @@ async def search_instruments(q: str, type: Optional[str] = None):
         query += " AND type = %s"
         params.append(type)
 
-    query += " ORDER BY CASE WHEN ticker ILIKE %s THEN 0 ELSE 1 END LIMIT 50"
-    params.append(q)
+    if sort_by and sort_by in {"ticker", "price", "volume", "name", "market_cap"}:
+        sort_order = "DESC" if order == "desc" else "ASC"
+        query += f" ORDER BY CASE WHEN price IS NULL THEN 1 ELSE 0 END, {sort_by} {sort_order}"
+    else:
+        query += " ORDER BY CASE WHEN ticker ILIKE %s THEN 0 ELSE 1 END"
+        params.append(q)
+
+    query += " LIMIT 50"
 
     cursor.execute(query, params)
     rows = cursor.fetchall()
