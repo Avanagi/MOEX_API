@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8ab6d611-708c-4192-aad9-7ff5bc675437" name="Changes" comment="Initialize project">
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dockerfile" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Avanagi&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Avanagi/MOEX_API.git&quot;,
+    &quot;accountId&quot;: &quot;eaab62ac-5780-4a44-87ee-91609975d676&quot;
+  }
+}</component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="0.001656657686971487" />
+      <entry key="MS500" value="0.49650133262122176" />
+      <entry key="S2" value="2.076333218061498" />
+      <entry key="S5" value="3.0329330979087623" />
+      <entry key="S10" value="3.474456455693458" />
+      <entry key="S30" value="3.8616874120605895" />
+      <entry key="S60" value="4.477071556337593" />
+      <entry key="M2" value="5.948732589082569" />
+      <entry key="M5" value="8.217302780617377" />
+      <entry key="M10" value="9.555001085693325" />
+      <entry key="M15" value="10.729464610692993" />
+      <entry key="M30" value="15.998392663298917" />
+      <entry key="H1" value="25.25038663679332" />
+      <entry key="H2" value="34.35848561571725" />
+      <entry key="H4" value="40.812343731988186" />
+      <entry key="D1" value="47.496427329597445" />
+      <entry key="W1" value="48.78152888733362" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0" />
+      <entry key="S30" value="1.0" />
+      <entry key="S60" value="1.0" />
+      <entry key="M2" value="1.0000000000003946" />
+      <entry key="M5" value="1.0000109261147083" />
+      <entry key="M10" value="1.0033054673963575" />
+      <entry key="M15" value="1.022189895239254" />
+      <entry key="M30" value="1.1489627310412036" />
+      <entry key="H1" value="1.3859569030879013" />
+      <entry key="H2" value="1.6212542982450113" />
+      <entry key="H4" value="1.7881968651580715" />
+      <entry key="D1" value="1.9611085716841634" />
+      <entry key="W1" value="1.9943491836123002" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.05793073185955644" />
+      <entry key="MS500" value="1.0558997988309429" />
+      <entry key="S2" value="2.939124868969635" />
+      <entry key="S5" value="3.9751320570194193" />
+      <entry key="S10" value="4.4450165108117" />
+      <entry key="S30" value="4.851741272217241" />
+      <entry key="S60" value="5.472041770033881" />
+      <entry key="M2" value="6.946156083577837" />
+      <entry key="M5" value="9.216244970382093" />
+      <entry key="M10" value="10.557758034546008" />
+      <entry key="M15" value="11.751271262435678" />
+      <entry key="M30" value="17.14711177244258" />
+      <entry key="H1" value="26.636173665254592" />
+      <entry key="H2" value="35.97963108223374" />
+      <entry key="H4" value="42.60047769033789" />
+      <entry key="D1" value="49.457523949137354" />
+      <entry key="W1" value="50.77587632316048" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3E1yi1V2uxe2Tgb6jchXQAfOlOk" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "frontend",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "D:/Projects/MOEX_API",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Projects\MOEX_API\frontend" />
+      <recent name="D:\Projects\MOEX_API" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-c59985aa861c-c2ffad84badb-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.24374.152" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8ab6d611-708c-4192-aad9-7ff5bc675437" name="Changes" comment="" />
+      <created>1779360494078</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1779360494078</updated>
+      <workItem from="1779360495103" duration="3407000" />
+      <workItem from="1779810929909" duration="3698000" />
+    </task>
+    <task id="LOCAL-00001" summary="Initialize project">
+      <option name="closed" value="true" />
+      <created>1779364715782</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1779364715782</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="backend" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initialize project" />
+    <option name="LAST_COMMIT_MESSAGE" value="Initialize project" />
+  </component>
+</project>
