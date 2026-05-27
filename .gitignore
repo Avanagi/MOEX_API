@@ -281,3 +281,4 @@ pnpm-store/
 
 frontend/*.html
 frontend/*.css
+.idea
