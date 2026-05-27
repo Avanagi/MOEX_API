@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8ab6d611-708c-4192-aad9-7ff5bc675437" name="Changes" comment="Initial commit for frontend">
-      <change afterPath="$PROJECT_DIR$/frontend/src/style.css" afterDir="false" />
+    <list default="true" id="8ab6d611-708c-4192-aad9-7ff5bc675437" name="Changes" comment="Merge branch 'frontend' into prerelease">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -45,20 +42,20 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {}
-}]]></component>
-  <component name="GitHubPullRequestState"><![CDATA[{
-  "prStates": [
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {}
+}</component>
+  <component name="GitHubPullRequestState">{
+  &quot;prStates&quot;: [
     {
-      "id": {
-        "id": "PR_kwDOSj2yss7d9z0e",
-        "number": 1
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOSj2yss7d9z0e&quot;,
+        &quot;number&quot;: 1
       },
-      "lastSeen": 1779817592531
+      &quot;lastSeen&quot;: 1779817592531
     }
   ]
-}]]></component>
+}</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Avanagi/MOEX_API.git&quot;,
@@ -67,61 +64,61 @@
 }</component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0000000214893114" />
-      <entry key="S5" value="1.002986347901683" />
-      <entry key="S10" value="1.1598890372492345" />
-      <entry key="S30" value="3.512880153990759" />
-      <entry key="S60" value="6.191901752049013" />
-      <entry key="M2" value="8.530738541379803" />
-      <entry key="M5" value="10.550444071843206" />
-      <entry key="M10" value="12.70410866892208" />
-      <entry key="M15" value="15.625860037980209" />
-      <entry key="M30" value="25.094874586541902" />
-      <entry key="H1" value="40.08446867746982" />
-      <entry key="H2" value="56.564982390826614" />
-      <entry key="H4" value="69.64506216443793" />
-      <entry key="D1" value="84.48058991798231" />
-      <entry key="W1" value="87.48446689178365" />
+      <entry key="MS100" value="1.7079889468727987" />
+      <entry key="MS500" value="4.209891643131698" />
+      <entry key="S2" value="6.61346344727166" />
+      <entry key="S5" value="7.394770494543144" />
+      <entry key="S10" value="7.69648617086594" />
+      <entry key="S30" value="8.273639544057463" />
+      <entry key="S60" value="9.789405979446832" />
+      <entry key="M2" value="12.690457437425687" />
+      <entry key="M5" value="16.670765860012583" />
+      <entry key="M10" value="19.861640130296948" />
+      <entry key="M15" value="23.091419603115046" />
+      <entry key="M30" value="32.84969370047348" />
+      <entry key="H1" value="48.08622063714125" />
+      <entry key="H2" value="64.85921627122734" />
+      <entry key="H4" value="78.21005655222939" />
+      <entry key="D1" value="93.39254442736325" />
+      <entry key="W1" value="96.47143897976497" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="5.1281144699626E-300" />
-      <entry key="MS500" value="1.3867288223089131E-60" />
-      <entry key="S2" value="1.0851702662448828E-15" />
-      <entry key="S5" value="1.0332351072844666E-6" />
-      <entry key="S10" value="0.0010164817299314658" />
-      <entry key="S30" value="0.10054640003014069" />
-      <entry key="S60" value="0.3170905234001103" />
-      <entry key="M2" value="0.5631080695029671" />
-      <entry key="M5" value="0.7967976403595356" />
-      <entry key="M10" value="0.9471946659041772" />
-      <entry key="M15" value="1.1040917380642865" />
-      <entry key="M30" value="1.5786114930785942" />
-      <entry key="H1" value="2.2390991817799137" />
-      <entry key="H2" value="2.883627709222001" />
-      <entry key="H4" value="3.3610865094419697" />
-      <entry key="D1" value="3.8796874472322633" />
-      <entry key="W1" value="3.9824327714144596" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="2.6028227963041659E-138" />
+      <entry key="S2" value="4.016623736653704E-35" />
+      <entry key="S5" value="1.7439918865991214E-14" />
+      <entry key="S10" value="1.3206028496861262E-7" />
+      <entry key="S30" value="0.005092418376841773" />
+      <entry key="S60" value="0.07136118256336943" />
+      <entry key="M2" value="0.2671352126609396" />
+      <entry key="M5" value="0.5912944387618376" />
+      <entry key="M10" value="0.815956715708628" />
+      <entry key="M15" value="0.9995942404208447" />
+      <entry key="M30" value="1.5020505645945923" />
+      <entry key="H1" value="2.184127452151451" />
+      <entry key="H2" value="2.8480100218414757" />
+      <entry key="H4" value="3.340264456540708" />
+      <entry key="D1" value="3.8756712671248326" />
+      <entry key="W1" value="3.981843575659367" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="4.310463014046451E-30" />
-      <entry key="MS500" value="1.3393830067996948E-6" />
-      <entry key="S2" value="0.03401938590811778" />
-      <entry key="S5" value="0.261618060129653" />
-      <entry key="S10" value="0.6685301220546003" />
-      <entry key="S30" value="3.3912916703820946" />
-      <entry key="S60" value="6.3730027049890525" />
-      <entry key="M2" value="9.014000881946409" />
-      <entry key="M5" value="11.311145000099662" />
-      <entry key="M10" value="13.632368655572508" />
-      <entry key="M15" value="16.717064175903317" />
-      <entry key="M30" value="26.66682361765012" />
-      <entry key="H1" value="42.32011984381366" />
-      <entry key="H2" value="59.44683121741557" />
-      <entry key="H4" value="73.00523877037828" />
-      <entry key="D1" value="88.360121969378" />
-      <entry key="W1" value="91.46687735704592" />
+      <entry key="MS100" value="1.661283899301327" />
+      <entry key="MS500" value="4.186611652441136" />
+      <entry key="S2" value="6.604301592168496" />
+      <entry key="S5" value="7.390671049848363" />
+      <entry key="S10" value="7.6942864744701875" />
+      <entry key="S30" value="8.266714579943606" />
+      <entry key="S60" value="9.82975400359117" />
+      <entry key="M2" value="12.919499106814593" />
+      <entry key="M5" value="17.235183753951684" />
+      <entry key="M10" value="20.661240174901366" />
+      <entry key="M15" value="24.079315523481306" />
+      <entry key="M30" value="34.34538960578645" />
+      <entry key="H1" value="50.26697704493885" />
+      <entry key="H2" value="67.70546553712373" />
+      <entry key="H4" value="81.54941481806985" />
+      <entry key="D1" value="97.2680601386497" />
+      <entry key="W1" value="100.45326020672996" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -146,7 +143,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "Site-UI",
+    "git-widget-placeholder": "prerelease",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
     "last_opened_file_path": "D:/Projects/MOEX_API",
@@ -199,7 +196,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779817413252</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Merge branch 'frontend' into prerelease">
+      <option name="closed" value="true" />
+      <created>1779918844205</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1779918844205</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -246,6 +251,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initialize project" />
     <MESSAGE value="Initial commit for frontend" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial commit for frontend" />
+    <MESSAGE value="Merge branch 'frontend' into prerelease" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'frontend' into prerelease" />
   </component>
 </project>
