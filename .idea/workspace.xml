@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8ab6d611-708c-4192-aad9-7ff5bc675437" name="Changes" comment="Initial commit for frontend">
+      <change afterPath="$PROJECT_DIR$/frontend/src/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dockerfile" />
+        <option value="CSS File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="frontend" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="frontend" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {}
+}]]></component>
+  <component name="GitHubPullRequestState"><![CDATA[{
+  "prStates": [
+    {
+      "id": {
+        "id": "PR_kwDOSj2yss7d9z0e",
+        "number": 1
+      },
+      "lastSeen": 1779817592531
+    }
+  ]
+}]]></component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Avanagi/MOEX_API.git&quot;,
+    &quot;accountId&quot;: &quot;eaab62ac-5780-4a44-87ee-91609975d676&quot;
+  }
+}</component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0000000214893114" />
+      <entry key="S5" value="1.002986347901683" />
+      <entry key="S10" value="1.1598890372492345" />
+      <entry key="S30" value="3.512880153990759" />
+      <entry key="S60" value="6.191901752049013" />
+      <entry key="M2" value="8.530738541379803" />
+      <entry key="M5" value="10.550444071843206" />
+      <entry key="M10" value="12.70410866892208" />
+      <entry key="M15" value="15.625860037980209" />
+      <entry key="M30" value="25.094874586541902" />
+      <entry key="H1" value="40.08446867746982" />
+      <entry key="H2" value="56.564982390826614" />
+      <entry key="H4" value="69.64506216443793" />
+      <entry key="D1" value="84.48058991798231" />
+      <entry key="W1" value="87.48446689178365" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="5.1281144699626E-300" />
+      <entry key="MS500" value="1.3867288223089131E-60" />
+      <entry key="S2" value="1.0851702662448828E-15" />
+      <entry key="S5" value="1.0332351072844666E-6" />
+      <entry key="S10" value="0.0010164817299314658" />
+      <entry key="S30" value="0.10054640003014069" />
+      <entry key="S60" value="0.3170905234001103" />
+      <entry key="M2" value="0.5631080695029671" />
+      <entry key="M5" value="0.7967976403595356" />
+      <entry key="M10" value="0.9471946659041772" />
+      <entry key="M15" value="1.1040917380642865" />
+      <entry key="M30" value="1.5786114930785942" />
+      <entry key="H1" value="2.2390991817799137" />
+      <entry key="H2" value="2.883627709222001" />
+      <entry key="H4" value="3.3610865094419697" />
+      <entry key="D1" value="3.8796874472322633" />
+      <entry key="W1" value="3.9824327714144596" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="4.310463014046451E-30" />
+      <entry key="MS500" value="1.3393830067996948E-6" />
+      <entry key="S2" value="0.03401938590811778" />
+      <entry key="S5" value="0.261618060129653" />
+      <entry key="S10" value="0.6685301220546003" />
+      <entry key="S30" value="3.3912916703820946" />
+      <entry key="S60" value="6.3730027049890525" />
+      <entry key="M2" value="9.014000881946409" />
+      <entry key="M5" value="11.311145000099662" />
+      <entry key="M10" value="13.632368655572508" />
+      <entry key="M15" value="16.717064175903317" />
+      <entry key="M30" value="26.66682361765012" />
+      <entry key="H1" value="42.32011984381366" />
+      <entry key="H2" value="59.44683121741557" />
+      <entry key="H4" value="73.00523877037828" />
+      <entry key="D1" value="88.360121969378" />
+      <entry key="W1" value="91.46687735704592" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3E1yi1V2uxe2Tgb6jchXQAfOlOk" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "Site-UI",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "D:/Projects/MOEX_API",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Projects\MOEX_API\frontend" />
+      <recent name="D:\Projects\MOEX_API" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-c59985aa861c-c2ffad84badb-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.24374.152" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8ab6d611-708c-4192-aad9-7ff5bc675437" name="Changes" comment="" />
+      <created>1779360494078</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1779360494078</updated>
+      <workItem from="1779360495103" duration="3407000" />
+      <workItem from="1779810929909" duration="6707000" />
+    </task>
+    <task id="LOCAL-00001" summary="Initialize project">
+      <option name="closed" value="true" />
+      <created>1779364715782</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1779364715782</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Initial commit for frontend">
+      <option name="closed" value="true" />
+      <created>1779817413252</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1779817413252</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="backend" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="Site-UI" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initialize project" />
+    <MESSAGE value="Initial commit for frontend" />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial commit for frontend" />
+  </component>
+</project>
