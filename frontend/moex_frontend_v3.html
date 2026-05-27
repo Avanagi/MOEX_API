@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOEX Инструменты — Подбор финансовых инструментов</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            --bg: #0A0A0F;
+            --bg2: #111118;
+            --bg3: #18181F;
+            --bg4: #1F1F28;
+            --border: #2A2A35;
+            --border2: #333340;
+            --red: #CC0018;
+            --red2: #E8001C;
+            --green: #1A9B5A;
+            --green2: #22C46E;
+            --text: #E8E8EE;
+            --text2: #9090A0;
+            --text3: #55556A;
+            --mono: 'IBM Plex Mono', monospace;
+            --sans: 'IBM Plex Sans', sans-serif;
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* TICKER */
+        .ticker-wrap {
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            height: 32px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .ticker-inner {
+            display: flex;
+            animation: scroll-left 50s linear infinite;
+            white-space: nowrap;
+        }
+
+        .ticker-inner:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .t-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 20px;
+            height: 32px;
+            border-right: 1px solid var(--border);
+            font-family: var(--mono);
+            font-size: 11px;
+        }
+
+        .t-ticker {
+            color: var(--text2);
+        }
+
+        .t-price {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .t-up {
+            color: var(--green2);
+        }
+
+        .t-dn {
+            color: var(--red2);
+        }
+
+        /* HEADER */
+        .site-header {
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            height: 52px;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: var(--mono);
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .logo-mark {
+            width: 6px;
+            height: 6px;
+            background: var(--red2);
+            border-radius: 50%;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 0;
+        }
+
+        .nav-item {
+            padding: 0 14px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text2);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: color .15s, border-color .15s;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            color: var(--text);
+            border-bottom-color: var(--red2);
+        }
+
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .market-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text2);
+        }
+
+        .status-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--green2);
+        }
+
+        .update-time {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text3);
+        }
+
+        /* HERO */
+        .hero {
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            padding: 28px 24px 0;
+        }
+
+        .hero-top {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .hero-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+        }
+
+        .hero-title span {
+            color: var(--red2);
+        }
+
+        .hero-sub {
+            font-size: 12px;
+            color: var(--text3);
+            margin-top: 4px;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat-cell {
+            padding: 14px 24px;
+            border-right: 1px solid var(--border);
+            min-width: 140px;
+        }
+
+        .stat-cell:last-child {
+            border-right: none;
+        }
+
+        .stat-num {
+            font-family: var(--mono);
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text3);
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* LAYOUT */
+        .layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: calc(100vh - 120px);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            padding: 16px;
+            position: sticky;
+            top: 52px;
+            height: calc(100vh - 52px);
+            overflow-y: auto;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border2);
+        }
+
+        .s-section {
+            margin-bottom: 20px;
+        }
+
+        .s-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .type-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .type-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 7px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text2);
+            transition: background .1s, color .1s;
+            border: 1px solid transparent;
+        }
+
+        .type-row:hover {
+            background: var(--bg3);
+            color: var(--text);
+        }
+
+        .type-row.active {
+            background: var(--bg3);
+            color: var(--text);
+            border-color: var(--border2);
+        }
+
+        .type-row.active .type-indicator {
+            background: var(--red2);
+        }
+
+        .type-indicator {
+            width: 3px;
+            height: 14px;
+            border-radius: 2px;
+            background: var(--border2);
+            margin-right: 8px;
+        }
+
+        .type-name {
+            flex: 1;
+        }
+
+        .type-count {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text3);
+        }
+
+        .f-group {
+            margin-bottom: 12px;
+        }
+
+        .f-label {
+            font-size: 11px;
+            color: var(--text2);
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .f-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .f-sep {
+            font-size: 11px;
+            color: var(--text3);
+            flex-shrink: 0;
+        }
+
+        input[type=text],
+        input[type=number],
+        input[type=date],
+        select {
+            width: 100%;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            padding: 6px 10px;
+            font-size: 12px;
+            font-family: var(--sans);
+            height: 32px;
+            transition: border-color .15s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--border2);
+            box-shadow: 0 0 0 2px rgba(232, 0, 28, 0.08);
+        }
+
+        input::placeholder {
+            color: var(--text3);
+        }
+
+        select option {
+            background: var(--bg3);
+        }
+
+        .f-row input {
+            flex: 1;
+        }
+
+        .adv-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text3);
+            cursor: pointer;
+            padding: 6px 0;
+            border-top: 1px solid var(--border);
+            margin-top: 4px;
+            transition: color .15s;
+        }
+
+        .adv-toggle:hover {
+            color: var(--text2);
+        }
+
+        .adv-arrow {
+            transition: transform .2s;
+        }
+
+        .adv-toggle.open .adv-arrow {
+            transform: rotate(180deg);
+        }
+
+        .adv-body {
+            display: none;
+            margin-top: 8px;
+        }
+
+        .adv-body.open {
+            display: block;
+        }
+
+        .s-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 12px 0;
+        }
+
+        .btn-search {
+            width: 100%;
+            padding: 8px;
+            background: var(--red2);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--sans);
+            transition: background .15s;
+            margin-bottom: 6px;
+        }
+
+        .btn-search:hover {
+            background: var(--red);
+        }
+
+        .btn-clear {
+            width: 100%;
+            padding: 7px;
+            background: transparent;
+            color: var(--text3);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: var(--sans);
+            transition: all .15s;
+        }
+
+        .btn-clear:hover {
+            color: var(--text2);
+            border-color: var(--border2);
+        }
+
+        /* CONTENT */
+        .content {
+            padding: 16px 20px;
+        }
+
+        .search-wrap {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 40px;
+            background: var(--bg3);
+            border: 1px solid var(--border2);
+            border-radius: 4px;
+            color: var(--text);
+            padding: 0 40px 0 14px;
+            font-size: 13px;
+            font-family: var(--sans);
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--red2);
+            box-shadow: 0 0 0 3px rgba(232, 0, 28, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text3);
+        }
+
+        .search-ico {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text3);
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        /* TOOLBAR */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .sort-pills {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            padding: 4px 10px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-size: 11px;
+            color: var(--text2);
+            cursor: pointer;
+            transition: all .15s;
+            font-family: var(--sans);
+            white-space: nowrap;
+        }
+
+        .pill:hover {
+            border-color: var(--border2);
+            color: var(--text);
+        }
+
+        .pill.active {
+            background: var(--red2);
+            color: #fff;
+            border-color: var(--red2);
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .found-count {
+            font-size: 12px;
+            color: var(--text3);
+            white-space: nowrap;
+        }
+
+        .found-count b {
+            color: var(--text2);
+            font-weight: 500;
+        }
+
+        .per-page-select {
+            width: auto;
+            height: 28px;
+            font-size: 11px;
+            padding: 3px 8px;
+        }
+
+        /* TABLE HEADER */
+        .table-header {
+            display: grid;
+            grid-template-columns: 200px 1fr 90px 90px 100px;
+            gap: 0;
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            border-radius: 4px 4px 0 0;
+            background: var(--bg3);
+            font-size: 10px;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+        }
+
+        .th {
+            padding: 0 4px;
+        }
+
+        .th.right {
+            text-align: right;
+        }
+
+        /* CARDS */
+        .cards {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .card {
+            display: grid;
+            grid-template-columns: 200px 1fr 90px 90px 100px;
+            gap: 0;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-top: none;
+            cursor: pointer;
+            transition: background .1s;
+            align-items: center;
+            background: var(--bg2);
+        }
+
+        .card:last-child {
+            border-radius: 0 0 4px 4px;
+        }
+
+        .card:hover {
+            background: var(--bg3);
+        }
+
+        .card.no-price {
+            opacity: 0.5;
+        }
+
+        .card-ticker-col {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 4px;
+        }
+
+        .card-stripe {
+            width: 2px;
+            height: 28px;
+            border-radius: 1px;
+            flex-shrink: 0;
+        }
+
+        .card-ticker {
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .card-badge {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 1px 5px;
+            border-radius: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .b-stock {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60A5FA;
+        }
+
+        .b-bond {
+            background: rgba(34, 197, 94, 0.12);
+            color: #4ADE80;
+        }
+
+        .b-futures {
+            background: rgba(251, 146, 60, 0.15);
+            color: #FB923C;
+        }
+
+        .b-option {
+            background: rgba(217, 70, 239, 0.12);
+            color: #E879F9;
+        }
+
+        .card-name-col {
+            padding: 0 4px;
+        }
+
+        .card-name {
+            font-size: 12px;
+            color: var(--text2);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card-meta {
+            font-size: 10px;
+            color: var(--text3);
+            margin-top: 2px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .card-yield {
+            color: var(--green2);
+            font-weight: 500;
+        }
+
+        .card-price-col {
+            text-align: right;
+            padding: 0 4px;
+        }
+
+        .card-price {
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .card-price.empty {
+            color: var(--text3);
+            font-size: 11px;
+        }
+
+        .card-currency {
+            font-size: 10px;
+            color: var(--text3);
+            margin-top: 1px;
+        }
+
+        .card-vol-col {
+            text-align: right;
+            padding: 0 4px;
+        }
+
+        .card-vol {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text2);
+        }
+
+        .card-extra-col {
+            text-align: right;
+            padding: 0 4px;
+        }
+
+        .card-extra {
+            font-size: 11px;
+            color: var(--text2);
+        }
+
+        .card-extra.yield-val {
+            color: var(--green2);
+            font-family: var(--mono);
+            font-weight: 500;
+        }
+
+        .card-extra.maturity {
+            color: var(--text2);
+            font-size: 10px;
+        }
+
+        /* LOADING */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            gap: 12px;
+            color: var(--text3);
+            font-size: 13px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border2);
+            border-top-color: var(--red2);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px;
+            color: var(--text3);
+        }
+
+        /* PAGINATION */
+        .pagination {
+            display: flex;
+            gap: 3px;
+            justify-content: center;
+            padding: 16px 0 24px;
+        }
+
+        .pg {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--text2);
+            background: var(--bg3);
+            font-family: var(--mono);
+            transition: all .1s;
+        }
+
+        .pg:hover {
+            border-color: var(--border2);
+            color: var(--text);
+        }
+
+        .pg.active {
+            background: var(--red2);
+            color: #fff;
+            border-color: var(--red2);
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg2);
+            border: 1px solid var(--border2);
+            border-radius: 6px;
+            padding: 24px;
+            width: min(560px, 100%);
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: mIn .2s ease;
+        }
+
+        @keyframes mIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 28px;
+            height: 28px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text2);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .15s;
+        }
+
+        .modal-close:hover {
+            background: var(--red2);
+            color: #fff;
+            border-color: var(--red2);
+        }
+
+        .modal-eyebrow {
+            font-size: 10px;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 4px;
+        }
+
+        .modal-title {
+            font-family: var(--mono);
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .modal-subtitle {
+            font-size: 13px;
+            color: var(--text2);
+            margin-bottom: 18px;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .modal-cell {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 10px 12px;
+        }
+
+        .modal-cell-label {
+            font-size: 10px;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 3px;
+        }
+
+        .modal-cell-val {
+            font-family: var(--mono);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .modal-cell-val.green {
+            color: var(--green2);
+        }
+
+        .modal-details {
+            border-top: 1px solid var(--border);
+            padding-top: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .modal-detail-item {
+            font-size: 12px;
+        }
+
+        .modal-detail-label {
+            color: var(--text3);
+            margin-bottom: 2px;
+        }
+
+        .modal-detail-val {
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 12px;
+        }
+
+        .modal-updated {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text3);
+            font-family: var(--mono);
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg3);
+            border: 1px solid var(--border2);
+            border-radius: 4px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--text2);
+            z-index: 300;
+            transform: translateY(60px);
+            opacity: 0;
+            transition: all .25s ease;
+            max-width: 260px;
+            font-family: var(--mono);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* SKELETON */
+        .skel {
+            height: 48px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-top: none;
+            animation: shimmer 1.4s infinite;
+        }
+
+        @keyframes shimmer {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ticker-wrap">
+        <div class="ticker-inner" id="tickerInner"></div>
+    </div>
+
+    <header class="site-header">
+        <div class="logo">
+            <div class="logo-mark"></div>MOEX
+        </div>
+        <nav class="header-nav">
+            <a class="nav-item" href="#">Главная</a>
+            <a class="nav-item active" href="#">Инструменты</a>
+            <a class="nav-item" href="#">Индексы</a>
+            <a class="nav-item" href="#">О бирже</a>
+        </nav>
+        <div class="header-right">
+            <div class="market-status">
+                <div class="status-dot"></div><span id="market-status-text">Загрузка...</span>
+            </div>
+            <div class="update-time" id="update-time"></div>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="hero-top">
+            <div>
+                <div class="hero-title">Подбор <span>финансовых инструментов</span></div>
+                <div class="hero-sub">Акции · Облигации · Фьючерсы · Опционы — данные Московской биржи</div>
+            </div>
+        </div>
+        <div class="stats-row">
+            <div class="stat-cell">
+                <div class="stat-num" id="s-total">—</div>
+                <div class="stat-label">Всего</div>
+            </div>
+            <div class="stat-cell">
+                <div class="stat-num" id="s-stock">—</div>
+                <div class="stat-label">Акций</div>
+            </div>
+            <div class="stat-cell">
+                <div class="stat-num" id="s-bond">—</div>
+                <div class="stat-label">Облигаций</div>
+            </div>
+            <div class="stat-cell">
+                <div class="stat-num" id="s-futures">—</div>
+                <div class="stat-label">Фьючерсов</div>
+            </div>
+            <div class="stat-cell">
+                <div class="stat-num" id="s-options">—</div>
+                <div class="stat-label">Опционов</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="s-section">
+                <div class="s-label">Тип инструмента</div>
+                <div class="type-list">
+                    <div class="type-row active" onclick="setType(this,'')">
+                        <div class="type-indicator"></div>
+                        <span class="type-name">Все инструменты</span>
+                        <span class="type-count" id="tc-all">—</span>
+                    </div>
+                    <div class="type-row" onclick="setType(this,'stock')">
+                        <div class="type-indicator"></div>
+                        <span class="type-name">Акции</span>
+                        <span class="type-count" id="tc-stock">—</span>
+                    </div>
+                    <div class="type-row" onclick="setType(this,'bond')">
+                        <div class="type-indicator"></div>
+                        <span class="type-name">Облигации</span>
+                        <span class="type-count" id="tc-bond">—</span>
+                    </div>
+                    <div class="type-row" onclick="setType(this,'futures')">
+                        <div class="type-indicator"></div>
+                        <span class="type-name">Фьючерсы</span>
+                        <span class="type-count" id="tc-futures">—</span>
+                    </div>
+                    <div class="type-row" onclick="setType(this,'option')">
+                        <div class="type-indicator"></div>
+                        <span class="type-name">Опционы</span>
+                        <span class="type-count" id="tc-options">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="s-divider">
+
+            <div class="s-section">
+                <div class="s-label">Основные фильтры</div>
+
+                <div class="f-group">
+                    <div class="f-label">Цена, ₽</div>
+                    <div class="f-row">
+                        <input type="number" id="f-minp" placeholder="от" min="0">
+                        <span class="f-sep">—</span>
+                        <input type="number" id="f-maxp" placeholder="до" min="0">
+                    </div>
+                </div>
+
+                <div class="f-group">
+                    <div class="f-label">Доходность, %</div>
+                    <div class="f-row">
+                        <input type="number" id="f-miny" placeholder="от" step="0.1">
+                        <span class="f-sep">—</span>
+                        <input type="number" id="f-maxy" placeholder="до" step="0.1">
+                    </div>
+                </div>
+
+                <div class="f-group">
+                    <div class="f-label">Эмитент</div>
+                    <input type="text" id="f-issuer" placeholder="Название...">
+                </div>
+
+                <div class="adv-toggle" id="advToggle" onclick="toggleAdv()">
+                    <span class="adv-arrow">▾</span>
+                    Расширенные фильтры
+                </div>
+                <div class="adv-body" id="advBody">
+                    <div class="f-group">
+                        <div class="f-label">Срок погашения</div>
+                        <div class="f-row">
+                            <input type="date" id="f-d1" style="font-size:11px">
+                            <span class="f-sep">—</span>
+                            <input type="date" id="f-d2" style="font-size:11px">
+                        </div>
+                    </div>
+                    <div class="f-group">
+                        <div class="f-label">Тип опциона</div>
+                        <select id="f-opt">
+                            <option value="">Все</option>
+                            <option value="C">Call</option>
+                            <option value="P">Put</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:8px">
+                <button class="btn-search" onclick="applyFilters()">Применить</button>
+                <button class="btn-clear" onclick="resetFilters()">Сбросить</button>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="search-wrap">
+                <input class="search-input" type="text" id="f-search" placeholder="Поиск по тикеру или названию..."
+                    oninput="onSearch()">
+                <span class="search-ico">⌕</span>
+            </div>
+
+            <div class="toolbar">
+                <div class="sort-pills">
+                    <span style="font-size:11px;color:var(--text3);margin-right:2px;padding:4px 0">Сортировка:</span>
+                    <div class="pill active" onclick="setSort(this,'ticker','asc')">Тикер A→Z</div>
+                    <div class="pill" onclick="setSort(this,'price','desc')">Цена ↓</div>
+                    <div class="pill" onclick="setSort(this,'price','asc')">Цена ↑</div>
+                    <div class="pill" onclick="setSort(this,'volume','desc')">Объём ↓</div>
+                    <div class="pill" onclick="setSort(this,'market_cap','desc')">Капитализация ↓</div>
+                </div>
+                <div class="toolbar-right">
+                    <span class="found-count">Найдено: <b id="res-count">—</b></span>
+                    <select class="per-page-select" onchange="perPage=+this.value;curPage=0;load()">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-header">
+                <div class="th">Инструмент</div>
+                <div class="th">Название / Эмитент</div>
+                <div class="th right">Цена</div>
+                <div class="th right">Объём</div>
+                <div class="th right">Доп. инфо</div>
+            </div>
+
+            <div class="cards" id="cards"></div>
+            <div class="pagination" id="pagination"></div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay" onclick="onOverlayClick(event)">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div class="modal-eyebrow" id="m-type"></div>
+            <div class="modal-title" id="m-ticker"></div>
+            <div class="modal-subtitle" id="m-name"></div>
+            <div class="modal-grid">
+                <div class="modal-cell">
+                    <div class="modal-cell-label">Цена</div>
+                    <div class="modal-cell-val" id="m-price">—</div>
+                </div>
+                <div class="modal-cell">
+                    <div class="modal-cell-label">Объём</div>
+                    <div class="modal-cell-val" id="m-vol">—</div>
+                </div>
+                <div class="modal-cell">
+                    <div class="modal-cell-label">Валюта</div>
+                    <div class="modal-cell-val" id="m-cur">—</div>
+                </div>
+            </div>
+            <div class="modal-details" id="m-details"></div>
+            <div class="modal-updated" id="m-updated"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API = 'http://127.0.0.1:8000/api';
+        let curType = '', curPage = 0, perPage = 20;
+        let curSort = 'ticker', curOrder = 'asc';
+        let searchTimer = null;
+
+        const TYPE_LABEL = { stock: 'Акция', bond: 'Облигация', futures: 'Фьючерс', option: 'Опцион' };
+        const STRIPE_COLOR = { stock: '#3B82F6', bond: '#22C55E', futures: '#F97316', option: '#D946EF' };
+        const BADGE_CLASS = { stock: 'b-stock', bond: 'b-bond', futures: 'b-futures', option: 'b-option' };
+
+        function fmt(v, d = 2) {
+            if (v == null) return '—';
+            return v.toLocaleString('ru', { minimumFractionDigits: d, maximumFractionDigits: d });
+        }
+        function fmtVol(v) {
+            if (!v) return '—';
+            if (v >= 1e9) return (v / 1e9).toFixed(1) + ' млрд';
+            if (v >= 1e6) return (v / 1e6).toFixed(1) + ' млн';
+            if (v >= 1e3) return (v / 1e3).toFixed(0) + ' тыс';
+            return v.toLocaleString('ru');
+        }
+
+        function toast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        // TICKER
+        async function buildTicker() {
+            try {
+                const r = await fetch(`${API}/instruments?type=stock&limit=14&sort_by=market_cap&order=desc`);
+                const data = await r.json();
+                const arr = [...data, ...data];
+                document.getElementById('tickerInner').innerHTML = arr.map(s => `
+      <span class="t-item">
+        <span class="t-ticker">${s.ticker}</span>
+        <span class="t-price">${s.price ? fmt(s.price) : '—'}</span>
+      </span>`).join('');
+            } catch (e) { }
+        }
+
+        // STATS
+        async function loadStats() {
+            try {
+                const [all, stock, bond, fut, opt] = await Promise.all([
+                    fetch(`${API}/instruments/count`).then(r => r.json()),
+                    fetch(`${API}/instruments/count?type=stock`).then(r => r.json()),
+                    fetch(`${API}/instruments/count?type=bond`).then(r => r.json()),
+                    fetch(`${API}/instruments/count?type=futures`).then(r => r.json()),
+                    fetch(`${API}/instruments/count?type=option`).then(r => r.json()),
+                ]);
+                const n = v => v.count.toLocaleString('ru');
+                document.getElementById('s-total').textContent = n(all);
+                document.getElementById('s-stock').textContent = n(stock);
+                document.getElementById('s-bond').textContent = n(bond);
+                document.getElementById('s-futures').textContent = n(fut);
+                document.getElementById('s-options').textContent = n(opt);
+                document.getElementById('tc-all').textContent = n(all);
+                document.getElementById('tc-stock').textContent = n(stock);
+                document.getElementById('tc-bond').textContent = n(bond);
+                document.getElementById('tc-futures').textContent = n(fut);
+                document.getElementById('tc-options').textContent = n(opt);
+            } catch (e) { }
+        }
+
+        // MARKET STATUS
+        function updateMarketStatus() {
+            const now = new Date();
+            const h = now.getHours(), m = now.getMinutes(), d = now.getDay();
+            const isWeekday = d >= 1 && d <= 5;
+            const isOpen = isWeekday && (h > 10 || (h === 10 && m >= 0)) && h < 19;
+            const statusEl = document.getElementById('market-status-text');
+            const dotEl = document.querySelector('.status-dot');
+            statusEl.textContent = isOpen ? 'Биржа открыта' : 'Биржа закрыта';
+            dotEl.style.background = isOpen ? 'var(--green2)' : 'var(--text3)';
+            document.getElementById('update-time').textContent = `Обновлено: ${now.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}`;
+        }
+
+        function setType(el, type) {
+            document.querySelectorAll('.type-row').forEach(r => r.classList.remove('active'));
+            el.classList.add('active');
+            curType = type;
+            curPage = 0;
+            load();
+        }
+
+        function setSort(el, s, o) {
+            document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            curSort = s; curOrder = o;
+            curPage = 0;
+            load();
+        }
+
+        function toggleAdv() {
+            document.getElementById('advToggle').classList.toggle('open');
+            document.getElementById('advBody').classList.toggle('open');
+        }
+
+        function onSearch() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => { curPage = 0; load(); }, 350);
+        }
+
+        function applyFilters() { curPage = 0; load(); }
+
+        function resetFilters() {
+            ['f-search', 'f-minp', 'f-maxp', 'f-miny', 'f-maxy', 'f-issuer', 'f-opt', 'f-d1', 'f-d2'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.value = '';
+            });
+            curType = ''; curPage = 0; curSort = 'ticker'; curOrder = 'asc';
+            document.querySelectorAll('.type-row').forEach((r, i) => r.classList.toggle('active', i === 0));
+            document.querySelectorAll('.pill').forEach((p, i) => p.classList.toggle('active', i === 0));
+            load();
+        }
+
+        async function load() {
+            const cards = document.getElementById('cards');
+            cards.innerHTML = Array(6).fill(`<div class="skel"></div>`).join('');
+
+            const q = document.getElementById('f-search').value.trim();
+            const minP = document.getElementById('f-minp').value;
+            const maxP = document.getElementById('f-maxp').value;
+            const minY = document.getElementById('f-miny').value;
+            const maxY = document.getElementById('f-maxy').value;
+
+            try {
+                let data, total;
+                if (q) {
+                    const tp = curType ? `&type=${curType}` : '';
+                    const r = await fetch(`${API}/instruments/search?q=${encodeURIComponent(q)}${tp}&sort_by=${curSort}&order=${curOrder}`);
+                    data = await r.json();
+                    total = data.length;
+                    data = data.slice(curPage * perPage, (curPage + 1) * perPage);
+                } else {
+                    const p = new URLSearchParams();
+                    if (curType) p.set('type', curType);
+                    if (minP) p.set('min_price', minP);
+                    if (maxP) p.set('max_price', maxP);
+                    if (minY) p.set('min_yield', minY);
+                    if (maxY) p.set('max_yield', maxY);
+                    p.set('sort_by', curSort);
+                    p.set('order', curOrder);
+                    p.set('limit', perPage);
+                    p.set('offset', curPage * perPage);
+                    const r = await fetch(`${API}/instruments?${p}`);
+                    data = await r.json();
+                    total = data.length < perPage ? curPage * perPage + data.length : curPage * perPage + data.length + 1;
+                }
+
+                document.getElementById('res-count').textContent = total.toLocaleString('ru');
+                renderCards(data);
+                renderPagination(total);
+            } catch (e) {
+                cards.innerHTML = `<div class="empty">Нет подключения к API. Убедитесь что сервер запущен.</div>`;
+                toast('Ошибка подключения к API');
+            }
+        }
+
+        function renderCards(data) {
+            const el = document.getElementById('cards');
+            if (!data.length) { el.innerHTML = '<div class="empty">Ничего не найдено</div>'; return; }
+            el.innerHTML = data.map(item => {
+                const type = item.type || '';
+                const hasPrice = item.price > 0;
+                const stripe = STRIPE_COLOR[type] || '#555';
+                const badge = `<span class="card-badge ${BADGE_CLASS[type] || ''}">${TYPE_LABEL[type] || type}</span>`;
+
+                // extra col
+                let extra = '—';
+                if (item.yield) extra = `<span class="card-extra yield-val">${item.yield}%</span>`;
+                else if (item.maturity_date) extra = `<span class="card-extra maturity">${item.maturity_date}</span>`;
+                else if (item.strike_price) extra = `<span class="card-extra">${item.strike_price.toLocaleString('ru')} ₽</span>`;
+                else if (item.option_type) extra = `<span class="card-extra">${item.option_type === 'C' ? 'Call' : 'Put'}</span>`;
+
+                // meta
+                const meta = [];
+                if (item.issuer) meta.push(item.issuer);
+                if (item.sector) meta.push(item.sector);
+
+                return `<div class="card${!hasPrice ? ' no-price' : ''}" onclick="openModal('${item.ticker}')">
+      <div class="card-ticker-col">
+        <div class="card-stripe" style="background:${stripe}"></div>
+        <div>
+          <div class="card-ticker">${item.ticker} ${badge}</div>
+        </div>
+      </div>
+      <div class="card-name-col">
+        <div class="card-name">${item.name || '—'}</div>
+        ${meta.length ? `<div class="card-meta">${meta.join(' · ')}</div>` : ''}
+      </div>
+      <div class="card-price-col">
+        <div class="card-price${!hasPrice ? ' empty' : ''}">${hasPrice ? fmt(item.price) + ' ₽' : 'нет данных'}</div>
+        <div class="card-currency">${item.currency || ''}</div>
+      </div>
+      <div class="card-vol-col">
+        <div class="card-vol">${fmtVol(item.volume)}</div>
+      </div>
+      <div class="card-extra-col">${extra}</div>
+    </div>`;
+            }).join('');
+        }
+
+        function renderPagination(total) {
+            const pages = Math.ceil(total / perPage);
+            const pag = document.getElementById('pagination');
+            if (pages <= 1) { pag.innerHTML = ''; return; }
+            const s = Math.max(0, curPage - 2), e = Math.min(pages, s + 5);
+            pag.innerHTML = Array.from({ length: e - s }, (_, i) => {
+                const p = s + i;
+                return `<div class="pg${p === curPage ? ' active' : ''}" onclick="goPage(${p})">${p + 1}</div>`;
+            }).join('');
+        }
+
+        function goPage(p) { curPage = p; load(); window.scrollTo({ top: 160, behavior: 'smooth' }); }
+
+        async function openModal(ticker) {
+            document.getElementById('m-type').textContent = '...';
+            document.getElementById('m-ticker').textContent = ticker;
+            document.getElementById('m-name').textContent = '';
+            document.getElementById('m-price').textContent = '—';
+            document.getElementById('m-vol').textContent = '—';
+            document.getElementById('m-cur').textContent = '—';
+            document.getElementById('m-details').innerHTML = '';
+            document.getElementById('m-updated').textContent = '';
+            document.getElementById('modalOverlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+
+            try {
+                const r = await fetch(`${API}/instruments/${ticker}`);
+                const d = await r.json();
+                document.getElementById('m-type').textContent = TYPE_LABEL[d.type] || d.type;
+                document.getElementById('m-ticker').textContent = d.ticker;
+                document.getElementById('m-name').textContent = d.name || '';
+                document.getElementById('m-price').textContent = d.price ? fmt(d.price) + ' ₽' : '—';
+                document.getElementById('m-vol').textContent = fmtVol(d.volume);
+                document.getElementById('m-cur').textContent = d.currency || '—';
+
+                const det = [];
+                if (d.issuer) det.push(['Эмитент', d.issuer]);
+                if (d.sector) det.push(['Сектор', d.sector]);
+                if (d.yield) det.push(['Доходность', d.yield + '%']);
+                if (d.maturity_date) det.push(['Погашение', d.maturity_date]);
+                if (d.market_cap) det.push(['Капитализация', fmtVol(d.market_cap) + ' ₽']);
+                if (d.strike_price) det.push(['Страйк', d.strike_price.toLocaleString('ru') + ' ₽']);
+                if (d.option_type) det.push(['Тип опциона', d.option_type === 'C' ? 'Call' : 'Put']);
+                if (d.volatility) det.push(['Волатильность', d.volatility]);
+
+                document.getElementById('m-details').innerHTML = det.map(([l, v]) =>
+                    `<div class="modal-detail-item"><div class="modal-detail-label">${l}</div><div class="modal-detail-val">${v}</div></div>`
+                ).join('');
+
+                if (d.updated_at) {
+                    document.getElementById('m-updated').textContent = `Последнее обновление: ${new Date(d.updated_at).toLocaleString('ru')}`;
+                }
+            } catch (e) {
+                document.getElementById('m-type').textContent = 'Ошибка загрузки';
+            }
+        }
+
+        function onOverlayClick(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        async function checkHealth() {
+            try {
+                const r = await fetch(`${API}/health`);
+                const d = await r.json();
+                if (d.status === 'ok') toast('API подключён');
+            } catch (e) { toast('API недоступен'); }
+        }
+
+        updateMarketStatus();
+        buildTicker();
+        checkHealth();
+        loadStats();
+        load();
+        setInterval(load, 30 * 60 * 1000);
+        setInterval(updateMarketStatus, 60 * 1000);
+    </script>
+</body>
+
+</html>
