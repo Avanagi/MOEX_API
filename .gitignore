@@ -277,3 +277,7 @@ pnpm-store/
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+
+frontend/*.html
+frontend/*.css
