@@ -6,3 +6,4 @@ schedule
 pydantic-settings
 python-dotenv
 aiohttp
+redis

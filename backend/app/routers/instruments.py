@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Optional
 from app.models.instrument import InstrumentOut, InstrumentFilter, InstrumentSearch
 from app.database import get_connection
+from app import cache
 
 router = APIRouter()
 
@@ -23,18 +24,39 @@ COLUMNS = [
     "option_type",
 ]
 
+SELECT_FIELDS = """
+    ticker, name, type, sector, price, volume, currency,
+    updated_at, yield, maturity_date, market_cap, issuer,
+    volatility, strike_price, option_type
+"""
+
 
 @router.get("/instruments", response_model=List[InstrumentOut])
 async def get_instruments(filters: InstrumentFilter = Depends()):
+
+    cache_key = cache.make_key(
+        "instruments",
+        type=filters.type,
+        sector=filters.sector,
+        min_price=filters.min_price,
+        max_price=filters.max_price,
+        min_yield=filters.min_yield,
+        max_yield=filters.max_yield,
+        maturity_from=filters.maturity_from,
+        maturity_to=filters.maturity_to,
+        sort_by=filters.sort_by,
+        order=filters.order,
+        limit=filters.limit,
+        offset=filters.offset,
+    )
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     conn = get_connection()
     cursor = conn.cursor()
 
-    query = """
-    SELECT ticker, name, type, sector, price, volume, currency,
-           updated_at, yield, maturity_date, market_cap, issuer,
-           volatility, strike_price, option_type
-    FROM instruments WHERE 1=1
-    """
+    query = f"SELECT {SELECT_FIELDS} FROM instruments WHERE 1=1"
     params = []
 
     if filters.type:
@@ -78,7 +100,9 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
     cursor.close()
     conn.close()
 
-    return [dict(zip(COLUMNS, row)) for row in rows]
+    result = [dict(zip(COLUMNS, row)) for row in rows]
+    cache.set(cache_key, result)
+    return result
 
 
 @router.get("/instruments/search", response_model=List[InstrumentOut])
@@ -88,13 +112,12 @@ async def search_instruments(
     sort_by: Optional[str] = None,
     order: Optional[str] = None,
 ):
+
     conn = get_connection()
     cursor = conn.cursor()
 
-    query = """
-        SELECT ticker, name, type, sector, price, volume, currency,
-        updated_at, yield, maturity_date, market_cap, issuer,
-        volatility, strike_price, option_type
+    query = f"""
+        SELECT {SELECT_FIELDS}
         FROM instruments
         WHERE (ticker ILIKE %s OR name ILIKE %s)
     """
@@ -123,11 +146,18 @@ async def search_instruments(
 
 @router.get("/instruments/types")
 async def get_types():
+
     return ["stock", "bond", "futures", "option"]
 
 
 @router.get("/instruments/count")
 async def get_count(type: Optional[str] = None):
+
+    cache_key = cache.make_key("count", type=type)
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     conn = get_connection()
     cursor = conn.cursor()
     if type:
@@ -137,21 +167,20 @@ async def get_count(type: Optional[str] = None):
     count = cursor.fetchone()[0]
     cursor.close()
     conn.close()
-    return {"count": count}
+
+    result = {"count": count}
+    cache.set(cache_key, result)
+    return result
 
 
 @router.get("/instruments/{ticker}", response_model=InstrumentOut)
 async def get_instrument(ticker: str):
+
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
-        """
-        SELECT ticker, name, type, sector, price, volume, currency,
-        updated_at, yield, maturity_date, market_cap, issuer,
-        volatility, strike_price, option_type
-        FROM instruments WHERE ticker = %s
-    """,
+        f"SELECT {SELECT_FIELDS} FROM instruments WHERE ticker = %s",
         [ticker.upper()],
     )
 
@@ -170,6 +199,11 @@ async def health():
     try:
         conn = get_connection()
         conn.close()
-        return {"status": "ok", "db": "connected"}
+        db_status = "connected"
     except Exception:
-        return {"status": "error", "db": "disconnected"}
+        db_status = "disconnected"
+
+    cache_status = "connected" if cache.get_client() is not None else "disconnected"
+
+    status = "ok" if db_status == "connected" else "error"
+    return {"status": status, "db": db_status, "cache": cache_status}
