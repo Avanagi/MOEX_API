@@ -1,0 +1,327 @@
+/* frontend/src/pages/FiltersPage.css */
+
+/* Обертка на весь экран для перекрытия темного фона сайта */
+.filters-page-wrapper {
+  background-color: #f1f5f9 !important; /* Мягкий светлый серый фон */
+  min-height: 100vh;
+  width: 100%;
+  padding: 30px 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.filters-page-container {
+  font-family: Arial, sans-serif;
+  color: #0f172a; /* Темный контрастный цвет текста */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* Навигация страницы */
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.filters-header h1 {
+  margin: 0;
+  font-size: 26px;
+  color: #0f172a !important; /* Глубокий темный */
+}
+
+.back-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* Вкладки типов активов */
+.asset-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 10px;
+}
+
+.asset-tab-btn {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  color: #334155; /* Контрастный серый на светлом фоне */
+}
+
+.asset-tab-btn:hover {
+  background: #e2e8f0;
+  color: #2563eb;
+}
+
+.asset-tab-btn.is-active {
+  background: #2563eb;
+  color: #ffffff !important; /* Белый текст на синей кнопке */
+  font-weight: bold;
+}
+
+/* Главный макет (сайдбар + сетка) */
+.filters-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 30px;
+}
+
+@media (max-width: 768px) {
+  .filters-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Левая панель фильтрации */
+.filter-sidebar {
+  background: #ffffff; /* Белая контрастная панель */
+  padding: 24px;
+  border-radius: 12px;
+  height: fit-content;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+.filter-sidebar h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 18px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 10px;
+  color: #0f172a;
+}
+
+.filter-group {
+  margin-bottom: 20px;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #334155;
+}
+
+.filter-input, .filter-select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.filter-range {
+  width: 100%;
+  cursor: pointer;
+}
+
+.range-values {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #475569;
+  margin-top: 4px;
+}
+
+/* Правая панель результатов */
+.results-container {
+  position: relative;
+}
+
+/* Эффект затухания карточек без мерцающего текста */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 15px;
+  transition: opacity 0.15s ease;
+}
+
+.results-grid.loading-blur {
+  opacity: 0.6; /* Легкое полупрозрачное затухание */
+  pointer-events: none;
+}
+
+/* Карточки инструментов (плитки) */
+.instrument-tile {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #0f172a;
+}
+
+.instrument-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+.instrument-tile b {
+  font-size: 18px;
+  color: #0f172a !important;
+}
+
+.instrument-tile span {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 8px;
+  color: #0f172a !important;
+}
+
+.instrument-tile small {
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: bold;
+  color: #475569 !important;
+}
+
+/* Тональность изменений */
+.instrument-tile.good { background: #eafcf0; border-color: #b7efcd; }
+.instrument-tile.good b, .instrument-tile.good span, .instrument-tile.good small { color: #166534 !important; }
+
+.instrument-tile.good-soft { background: #f0fdf4; border-color: #bbf7d0; }
+.instrument-tile.good-soft b, .instrument-tile.good-soft span, .instrument-tile.good-soft small { color: #15803d !important; }
+
+.instrument-tile.bad { background: #fef2f2; border-color: #fecaca; }
+.instrument-tile.bad b, .instrument-tile.bad span, .instrument-tile.bad small { color: #991b1b !important; }
+
+.instrument-tile.bad-strong { background: #fff5f5; border-color: #fca5a1; }
+.instrument-tile.bad-strong b, .instrument-tile.bad-strong span, .instrument-tile.bad-strong small { color: #c53030 !important; }
+
+/* Пагинация */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 40px;
+  color: #0f172a !important; /* Яркий темный цвет текста */
+}
+
+.pagination span {
+  color: #0f172a !important; /* Принудительно окрашиваем "Страница X" */
+  font-weight: bold;
+}
+
+.page-btn {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: #0f172a;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Модальное окно */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px;
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  box-shadow: 0 20px 24px -4px rgba(15, 23, 42, 0.1);
+  color: #0f172a;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #475569;
+}
+
+.modal-content h2 {
+  color: #0f172a;
+}
+
+.modal-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-item small {
+  color: #475569;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.stat-item b {
+  font-size: 16px;
+  color: #0f172a;
+}

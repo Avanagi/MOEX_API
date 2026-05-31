@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8ab6d611-708c-4192-aad9-7ff5bc675437" name="Changes" comment="Merge branch 'frontend' into prerelease">
+    <list default="true" id="8ab6d611-708c-4192-aad9-7ff5bc675437" name="Changes" comment="Testing configuration for project">
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/FiltersPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/FiltersPage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
     </list>
@@ -64,61 +66,61 @@
 }</component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.7079889468727987" />
-      <entry key="MS500" value="4.209891643131698" />
-      <entry key="S2" value="6.61346344727166" />
-      <entry key="S5" value="7.394770494543144" />
-      <entry key="S10" value="7.69648617086594" />
-      <entry key="S30" value="8.273639544057463" />
-      <entry key="S60" value="9.789405979446832" />
-      <entry key="M2" value="12.690457437425687" />
-      <entry key="M5" value="16.670765860012583" />
-      <entry key="M10" value="19.861640130296948" />
-      <entry key="M15" value="23.091419603115046" />
-      <entry key="M30" value="32.84969370047348" />
-      <entry key="H1" value="48.08622063714125" />
-      <entry key="H2" value="64.85921627122734" />
-      <entry key="H4" value="78.21005655222939" />
-      <entry key="D1" value="93.39254442736325" />
-      <entry key="W1" value="96.47143897976497" />
+      <entry key="MS100" value="1.5010803905801584" />
+      <entry key="MS500" value="2.9708784144421245" />
+      <entry key="S2" value="3.6920607241662857" />
+      <entry key="S5" value="3.8720528611394864" />
+      <entry key="S10" value="3.9352501572205654" />
+      <entry key="S30" value="4.139722615496277" />
+      <entry key="S60" value="5.279711143640799" />
+      <entry key="M2" value="8.126771076012236" />
+      <entry key="M5" value="16.791357876109878" />
+      <entry key="M10" value="27.339195853308325" />
+      <entry key="M15" value="34.53051921736219" />
+      <entry key="M30" value="49.41731365753588" />
+      <entry key="H1" value="68.36129309038634" />
+      <entry key="H2" value="88.15543419126078" />
+      <entry key="H4" value="103.82586157787463" />
+      <entry key="D1" value="121.72737780387261" />
+      <entry key="W1" value="125.37347854876448" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="2.6028227963041659E-138" />
-      <entry key="S2" value="4.016623736653704E-35" />
-      <entry key="S5" value="1.7439918865991214E-14" />
-      <entry key="S10" value="1.3206028496861262E-7" />
-      <entry key="S30" value="0.005092418376841773" />
-      <entry key="S60" value="0.07136118256336943" />
-      <entry key="M2" value="0.2671352126609396" />
-      <entry key="M5" value="0.5912944387618376" />
-      <entry key="M10" value="0.815956715708628" />
-      <entry key="M15" value="0.9995942404208447" />
-      <entry key="M30" value="1.5020505645945923" />
-      <entry key="H1" value="2.184127452151451" />
-      <entry key="H2" value="2.8480100218414757" />
-      <entry key="H4" value="3.340264456540708" />
-      <entry key="D1" value="3.8756712671248326" />
-      <entry key="W1" value="3.981843575659367" />
+      <entry key="MS500" value="7.589503702997024E-130" />
+      <entry key="S2" value="8.453650871112207E-33" />
+      <entry key="S5" value="2.2376622309339706E-13" />
+      <entry key="S10" value="6.720117150674948E-7" />
+      <entry key="S30" value="0.016279230785379153" />
+      <entry key="S60" value="0.23589907582330927" />
+      <entry key="M2" value="0.9527227465471823" />
+      <entry key="M5" value="2.338693589340424" />
+      <entry key="M10" value="3.3263878927595942" />
+      <entry key="M15" value="3.848032437048919" />
+      <entry key="M30" value="4.748216966516092" />
+      <entry key="H1" value="5.6952655850227485" />
+      <entry key="H2" value="6.549841996605954" />
+      <entry key="H4" value="7.171255670239283" />
+      <entry key="D1" value="7.843881331269288" />
+      <entry key="W1" value="7.9771993357685025" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.661283899301327" />
-      <entry key="MS500" value="4.186611652441136" />
-      <entry key="S2" value="6.604301592168496" />
-      <entry key="S5" value="7.390671049848363" />
-      <entry key="S10" value="7.6942864744701875" />
-      <entry key="S30" value="8.266714579943606" />
-      <entry key="S60" value="9.82975400359117" />
-      <entry key="M2" value="12.919499106814593" />
-      <entry key="M5" value="17.235183753951684" />
-      <entry key="M10" value="20.661240174901366" />
-      <entry key="M15" value="24.079315523481306" />
-      <entry key="M30" value="34.34538960578645" />
-      <entry key="H1" value="50.26697704493885" />
-      <entry key="H2" value="67.70546553712373" />
-      <entry key="H4" value="81.54941481806985" />
-      <entry key="D1" value="97.2680601386497" />
-      <entry key="W1" value="100.45326020672996" />
+      <entry key="MS100" value="1.4335442943317185" />
+      <entry key="MS500" value="2.945602211403024" />
+      <entry key="S2" value="3.6843382820588415" />
+      <entry key="S5" value="3.8688246007441194" />
+      <entry key="S10" value="3.933612196468199" />
+      <entry key="S30" value="4.154866125453321" />
+      <entry key="S60" value="5.510952282662592" />
+      <entry key="M2" value="9.069748063937409" />
+      <entry key="M5" value="19.116486002392236" />
+      <entry key="M10" value="30.6527473028809" />
+      <entry key="M15" value="38.36757411247651" />
+      <entry key="M30" value="54.158310939714276" />
+      <entry key="H1" value="74.05234030809046" />
+      <entry key="H2" value="94.70296881912965" />
+      <entry key="H4" value="110.99590364120222" />
+      <entry key="D1" value="129.57104722119962" />
+      <entry key="W1" value="133.3506473531834" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -133,30 +135,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "prerelease",
-    "ignore.virus.scanning.warn.message": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "D:/Projects/MOEX_API",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;prerelease&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Projects/MOEX_API&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Projects\MOEX_API\frontend" />
@@ -179,6 +181,10 @@
       <updated>1779360494078</updated>
       <workItem from="1779360495103" duration="3407000" />
       <workItem from="1779810929909" duration="6707000" />
+      <workItem from="1779919162858" duration="769000" />
+      <workItem from="1779968862968" duration="147000" />
+      <workItem from="1780064993876" duration="1985000" />
+      <workItem from="1780157812945" duration="1891000" />
     </task>
     <task id="LOCAL-00001" summary="Initialize project">
       <option name="closed" value="true" />
@@ -204,7 +210,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779918844205</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Testing configuration for project">
+      <option name="closed" value="true" />
+      <created>1779919392221</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1779919392221</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -252,6 +266,7 @@
     <MESSAGE value="Initialize project" />
     <MESSAGE value="Initial commit for frontend" />
     <MESSAGE value="Merge branch 'frontend' into prerelease" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'frontend' into prerelease" />
+    <MESSAGE value="Testing configuration for project" />
+    <option name="LAST_COMMIT_MESSAGE" value="Testing configuration for project" />
   </component>
 </project>
