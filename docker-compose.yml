@@ -42,6 +42,8 @@ services:
       - DB_USER=postgres_user
       - DB_PASSWORD=postgres_password
       - DB_NAME=moex_db
+      - REDIS_HOST=cache    
+      - REDIS_PORT=6379       
     depends_on:
       - db
       - cache
@@ -61,8 +63,11 @@ services:
       - DB_USER=postgres_user
       - DB_PASSWORD=postgres_password
       - DB_NAME=moex_db
+      - REDIS_HOST=cache    
+      - REDIS_PORT=6379      
     depends_on:
       - db
+      - cache
     networks:
       - moex_network
 
