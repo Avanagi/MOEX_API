@@ -1,15 +1,11 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    db_host: str
-    db_port: int
-    db_user: str
-    db_password: str
-    db_name: str
+    db_host: str = ""
+    db_port: int = 5432
+    db_user: str = "postgres"
+    db_password: str = "postgres"
+    db_name: str = "moex"
 
-    class Config:
-        env_file = ".env"
-
-
-settings = Settings()
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
