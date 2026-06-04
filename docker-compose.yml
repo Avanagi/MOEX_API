@@ -16,6 +16,12 @@ services:
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - moex_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres_user -d moex_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   cache:
     image: redis:7-alpine
@@ -27,6 +33,12 @@ services:
       - redis_data:/data
     networks:
       - moex_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
 
   backend:
     build:
@@ -42,9 +54,13 @@ services:
       - DB_USER=postgres_user
       - DB_PASSWORD=postgres_password
       - DB_NAME=moex_db
+      - REDIS_HOST=cache    
+      - REDIS_PORT=6379       
     depends_on:
-      - db
-      - cache
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
     networks:
       - moex_network
 
@@ -54,15 +70,20 @@ services:
       dockerfile: Dockerfile
     container_name: moex_collector
     restart: always
-    command: python collector/moex_collector.py
+    command: sh -c "python scripts/wait_for_services.py && python collector/moex_collector.py"
     environment:
       - DB_HOST=db
       - DB_PORT=5432
       - DB_USER=postgres_user
       - DB_PASSWORD=postgres_password
       - DB_NAME=moex_db
+      - REDIS_HOST=cache    
+      - REDIS_PORT=6379      
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
     networks:
       - moex_network
 

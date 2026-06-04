@@ -12,6 +12,12 @@ sys.stdout.reconfigure(line_buffering=True)
 
 load_dotenv()
 
+
+try:
+    from app import cache
+except Exception:
+    cache = None
+
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
     "port": int(os.getenv("DB_PORT", 5432)),
@@ -101,8 +107,6 @@ def save_to_db(all_instruments):
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         cursor = conn.cursor()
-        # удаляем старые данные по этому типу перед вставкой
-        instrument_type = all_instruments[0]["type"]
         # удаляем все старые данные перед вставкой
         cursor.execute("DELETE FROM instruments")
 
@@ -143,6 +147,10 @@ def save_to_db(all_instruments):
         cursor.close()
         conn.close()
         print(f"[{datetime.now()}] Сохранено {len(all_instruments)} инструментов в БД")
+
+        if cache is not None:
+            removed = cache.flush()
+            print(f"[{datetime.now()}] Кэш инвалидирован ({removed} ключей)")
 
     except Exception as e:
         print(f"[{datetime.now()}] Ошибка записи в БД: {e}")
