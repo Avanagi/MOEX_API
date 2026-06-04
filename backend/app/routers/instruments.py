@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Optional
-from app.models.instrument import InstrumentOut, InstrumentFilter, InstrumentSearch
+from app.models.instrument import InstrumentOut, InstrumentFilter
 from app.database import get_connection
 from app import cache
 
