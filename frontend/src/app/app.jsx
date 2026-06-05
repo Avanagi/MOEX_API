@@ -1,509 +1,388 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  fetchCount,
-  fetchHealth,
-  fetchInstruments,
-  searchInstruments,
-} from '../api/moex.js'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-const INSTRUMENT_TYPES = [
-  { id: '', label: 'Все' },
+const API = '/api'
+
+const TYPE_LABEL = { stock: 'Акция', bond: 'Облигация', futures: 'Фьючерс', option: 'Опцион' }
+const STRIPE_COLOR = { stock: '#3B82F6', bond: '#22C55E', futures: '#F97316', option: '#D946EF' }
+const BADGE_CLASS = { stock: 'b-stock', bond: 'b-bond', futures: 'b-futures', option: 'b-option' }
+
+const TYPES = [
+  { id: '', label: 'Все инструменты' },
   { id: 'stock', label: 'Акции' },
   { id: 'bond', label: 'Облигации' },
   { id: 'futures', label: 'Фьючерсы' },
   { id: 'option', label: 'Опционы' },
 ]
 
-const SORT_OPTIONS = [
-  { id: 'ticker', label: 'Тикер' },
-  { id: 'name', label: 'Название' },
-  { id: 'price', label: 'Цена' },
-  { id: 'volume', label: 'Объём' },
-  { id: 'market_cap', label: 'Капитализация' },
+const SORTS = [
+  { sort: 'ticker', order: 'asc', label: 'Тикер A→Z' },
+  { sort: 'price', order: 'desc', label: 'Цена ↓' },
+  { sort: 'price', order: 'asc', label: 'Цена ↑' },
+  { sort: 'volume', order: 'desc', label: 'Объём ↓' },
+  { sort: 'market_cap', order: 'desc', label: 'Капитализация ↓' },
 ]
 
-const TYPE_LABELS = {
-  stock: 'Акция',
-  bond: 'Облигация',
-  futures: 'Фьючерс',
-  option: 'Опцион',
+function fmt(v, d = 2) {
+  if (v == null) return '—'
+  return Number(v).toLocaleString('ru', { minimumFractionDigits: d, maximumFractionDigits: d })
 }
 
-const PAGE_SIZE = 50
-
-function formatNumber(value) {
-  if (value === null || value === undefined || Number.isNaN(Number(value))) return '—'
-  return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 }).format(Number(value))
+function fmtVol(v) {
+  if (!v) return '—'
+  if (v >= 1e9) return (v / 1e9).toFixed(1) + ' млрд'
+  if (v >= 1e6) return (v / 1e6).toFixed(1) + ' млн'
+  if (v >= 1e3) return (v / 1e3).toFixed(0) + ' тыс'
+  return Number(v).toLocaleString('ru')
 }
 
-function formatPercent(value) {
-  if (value === null || value === undefined) return '—'
-  return `${Number(value).toFixed(2).replace('.', ',')}%`
-}
-
-function formatDate(value) {
-  if (!value) return '—'
-  return new Intl.DateTimeFormat('ru-RU').format(new Date(value))
-}
-
-function FilterChip({ active, children, onClick }) {
-  return (
-    <button
-      type="button"
-      className={`filter-chip ${active ? 'filter-chip--active' : ''}`}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  )
-}
-
-const emptyFilters = {
-  type: '',
-  sector: '',
-  min_price: '',
-  max_price: '',
-  min_yield: '',
-  max_yield: '',
-  maturity_from: '',
-  maturity_to: '',
-  sort_by: 'ticker',
-  order: 'asc',
+function getMarketStatus() {
+  const now = new Date()
+  const h = now.getHours(), m = now.getMinutes(), d = now.getDay()
+  const isWeekday = d >= 1 && d <= 5
+  const isOpen = isWeekday && (h > 10 || (h === 10 && m >= 0)) && h < 19
+  const time = now.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })
+  return { isOpen, time }
 }
 
 export default function App() {
-  const [filters, setFilters] = useState(emptyFilters)
+  const [curType, setCurType] = useState('')
+  const [curPage, setCurPage] = useState(0)
+  const [perPage, setPerPage] = useState(20)
+  const [sortKey, setSortKey] = useState(0)
   const [search, setSearch] = useState('')
-  const [offset, setOffset] = useState(0)
   const [instruments, setInstruments] = useState([])
-  const [selected, setSelected] = useState(null)
+  const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [health, setHealth] = useState(null)
   const [counts, setCounts] = useState({ total: 0, stock: 0, bond: 0, futures: 0, option: 0 })
-  const [listTotal, setListTotal] = useState(0)
+  const [tickerData, setTickerData] = useState([])
+  const [marketStatus, setMarketStatus] = useState(getMarketStatus)
+  const [modal, setModal] = useState(null)
+  const [modalLoading, setModalLoading] = useState(false)
+  const [toastMsg, setToastMsg] = useState('')
+  const [showAdv, setShowAdv] = useState(false)
+  const [fMinP, setFMinP] = useState('')
+  const [fMaxP, setFMaxP] = useState('')
+  const [fMinY, setFMinY] = useState('')
+  const [fMaxY, setFMaxY] = useState('')
+  const [fD1, setFD1] = useState('')
+  const [fD2, setFD2] = useState('')
+  const [fOpt, setFOpt] = useState('')
+  const searchTimer = useRef(null)
+  const toastTimer = useRef(null)
+  const curSort = SORTS[sortKey].sort
+  const curOrder = SORTS[sortKey].order
 
-  const loadCounts = useCallback(async () => {
+  function toast(msg) {
+    setToastMsg(msg)
+    clearTimeout(toastTimer.current)
+    toastTimer.current = setTimeout(() => setToastMsg(''), 3000)
+  }
+
+  const loadStats = useCallback(async () => {
     try {
-      const [total, stock, bond, futures, option] = await Promise.all([
-        fetchCount(),
-        fetchCount('stock'),
-        fetchCount('bond'),
-        fetchCount('futures'),
-        fetchCount('option'),
+      const [all, stock, bond, fut, opt] = await Promise.all([
+        fetch(`${API}/instruments/count`).then(r => r.json()),
+        fetch(`${API}/instruments/count?type=stock`).then(r => r.json()),
+        fetch(`${API}/instruments/count?type=bond`).then(r => r.json()),
+        fetch(`${API}/instruments/count?type=futures`).then(r => r.json()),
+        fetch(`${API}/instruments/count?type=option`).then(r => r.json()),
       ])
-      setCounts({
-        total: total.count,
-        stock: stock.count,
-        bond: bond.count,
-        futures: futures.count,
-        option: option.count,
-      })
-    } catch {
-      /* stats are optional */
-    }
+      setCounts({ total: all.count, stock: stock.count, bond: bond.count, futures: fut.count, option: opt.count })
+    } catch { /* optional */ }
   }, [])
 
-  const buildApiFilters = useCallback(() => {
-    const payload = {
-      sort_by: filters.sort_by,
-      order: filters.order,
-      limit: PAGE_SIZE,
-      offset,
-    }
-    if (filters.type) payload.type = filters.type
-    if (filters.sector.trim()) payload.sector = filters.sector.trim()
-    if (filters.min_price !== '') payload.min_price = Number(filters.min_price)
-    if (filters.max_price !== '') payload.max_price = Number(filters.max_price)
-    if (filters.min_yield !== '') payload.min_yield = Number(filters.min_yield)
-    if (filters.max_yield !== '') payload.max_yield = Number(filters.max_yield)
-    if (filters.maturity_from) payload.maturity_from = filters.maturity_from
-    if (filters.maturity_to) payload.maturity_to = filters.maturity_to
-    return payload
-  }, [filters, offset])
+  const loadTicker = useCallback(async () => {
+    try {
+      const r = await fetch(`${API}/instruments?type=stock&limit=14&sort_by=market_cap&order=desc`)
+      const data = await r.json()
+      setTickerData(data.filter(s => s.price))
+    } catch { /* optional */ }
+  }, [])
 
   const loadInstruments = useCallback(async () => {
     setLoading(true)
-    setError(null)
     try {
-      const query = search.trim()
-      let rows
-      if (query.length > 0) {
-        rows = await searchInstruments({
-          q: query,
-          type: filters.type || undefined,
-          sort_by: filters.sort_by,
-          order: filters.order,
-        })
-        setListTotal(rows.length)
+      let data, tot
+      const q = search.trim()
+      if (q) {
+        const tp = curType ? `&type=${curType}` : ''
+        const r = await fetch(`${API}/instruments/search?q=${encodeURIComponent(q)}${tp}&sort_by=${curSort}&order=${curOrder}`)
+        const all = await r.json()
+        tot = all.length
+        data = all.slice(curPage * perPage, (curPage + 1) * perPage)
       } else {
-        rows = await fetchInstruments(buildApiFilters())
-        const countRes = await fetchCount(filters.type || undefined)
-        setListTotal(countRes.count)
+        const p = new URLSearchParams()
+        if (curType) p.set('type', curType)
+        if (fMinP) p.set('min_price', fMinP)
+        if (fMaxP) p.set('max_price', fMaxP)
+        if (fMinY) p.set('min_yield', fMinY)
+        if (fMaxY) p.set('max_yield', fMaxY)
+        if (fD1) p.set('maturity_from', fD1)
+        if (fD2) p.set('maturity_to', fD2)
+        p.set('sort_by', curSort)
+        p.set('order', curOrder)
+        p.set('limit', String(perPage))
+        p.set('offset', String(curPage * perPage))
+        const r = await fetch(`${API}/instruments?${p}`)
+        data = await r.json()
+        tot = data.length < perPage ? curPage * perPage + data.length : curPage * perPage + data.length + 1
       }
-      setInstruments(rows)
-      if (rows.length === 0) {
-        setSelected(null)
-      } else {
-        setSelected((prev) => {
-          if (prev && rows.some((row) => row.ticker === prev.ticker)) return prev
-          return rows[0]
-        })
-      }
-    } catch (err) {
-      setError(err.message ?? 'Не удалось загрузить данные')
+      setInstruments(data)
+      setTotal(tot)
+    } catch {
       setInstruments([])
-      setSelected(null)
+      setTotal(0)
+      toast('Ошибка подключения к API')
     } finally {
       setLoading(false)
     }
-  }, [search, filters, offset, buildApiFilters])
+  }, [search, curType, curSort, curOrder, curPage, perPage, fMinP, fMaxP, fMinY, fMaxY, fD1, fD2])
 
   useEffect(() => {
-    fetchHealth().then(setHealth).catch(() => setHealth({ status: 'error' }))
-    loadCounts()
-  }, [loadCounts])
+    loadStats()
+    loadTicker()
+    fetch(`${API}/health`).then(r => r.json()).then(d => { if (d.status === 'ok') toast('API подключён') }).catch(() => toast('API недоступен'))
+    const iv = setInterval(() => setMarketStatus(getMarketStatus()), 60000)
+    return () => clearInterval(iv)
+  }, [loadStats, loadTicker])
+
+  useEffect(() => { loadInstruments() }, [loadInstruments])
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      loadInstruments()
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [loadInstruments])
+    const iv = setInterval(() => { loadStats(); loadTicker(); loadInstruments() }, 30 * 60 * 1000)
+    return () => clearInterval(iv)
+  }, [loadStats, loadTicker, loadInstruments])
 
-  const summary = useMemo(
-    () => [
-      { label: 'Всего', value: counts.total },
-      { label: 'Акции', value: counts.stock },
-      { label: 'Облигации', value: counts.bond },
-      { label: 'Фьючерсы', value: counts.futures },
-      { label: 'Опционы', value: counts.option },
-    ],
-    [counts],
-  )
-
-  const page = Math.floor(offset / PAGE_SIZE) + 1
-  const totalPages = Math.max(1, Math.ceil(listTotal / PAGE_SIZE))
-  const searchMode = search.trim().length > 0
-
-  function updateFilter(key, value) {
-    setOffset(0)
-    setFilters((prev) => ({ ...prev, [key]: value }))
+  function onSearch(e) {
+    const val = e.target.value
+    setSearch(val)
+    clearTimeout(searchTimer.current)
+    searchTimer.current = setTimeout(() => setCurPage(0), 350)
   }
 
+  function selectType(id) { setCurType(id); setCurPage(0) }
+  function selectSort(idx) { setSortKey(idx); setCurPage(0) }
+  function applyFilters() { setCurPage(0) }
   function resetFilters() {
-    setOffset(0)
-    setFilters(emptyFilters)
-    setSearch('')
+    setSearch(''); setFMinP(''); setFMaxP(''); setFMinY(''); setFMaxY('')
+    setCurType(''); setCurPage(0); setSortKey(0)
   }
+  function goPage(p) { setCurPage(p); window.scrollTo({ top: 160, behavior: 'smooth' }) }
+
+  async function openModal(ticker) {
+    setModal({ ticker }); setModalLoading(true)
+    try {
+      const r = await fetch(`${API}/instruments/${ticker}`)
+      setModal(await r.json())
+    } catch { setModal({ ticker, error: true }) }
+    finally { setModalLoading(false) }
+  }
+  function closeModal() { setModal(null) }
+
+  useEffect(() => {
+    const fn = e => { if (e.key === 'Escape') closeModal() }
+    document.addEventListener('keydown', fn)
+    return () => document.removeEventListener('keydown', fn)
+  }, [])
+
+  const pages = Math.ceil(total / perPage)
+  const ps = Math.max(0, curPage - 2), pe = Math.min(pages, ps + 5)
+  const tickerLoop = [...tickerData, ...tickerData]
 
   return (
-    <div className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand__dot" />
-          MOEX
+    <>
+      <div className="ticker-wrap">
+        <div className="ticker-inner">
+          {tickerLoop.map((s, i) => (
+            <span className="t-item" key={`${s.ticker}-${i}`}>
+              <span className="t-ticker">{s.ticker}</span>
+              <span className="t-price">{s.price ? fmt(s.price) : '—'}</span>
+            </span>
+          ))}
         </div>
-        <nav className="topbar__nav">
-          <button type="button" className="is-active">
-            Инструменты
-          </button>
+      </div>
+      <header className="site-header">
+        <div className="logo"><div className="logo-mark" />MOEX</div>
+        <nav className="header-nav">
+          <span className="nav-item">Главная</span>
+          <span className="nav-item active">Инструменты</span>
+          <span className="nav-item">Индексы</span>
+          <span className="nav-item">О бирже</span>
         </nav>
-        <div className="topbar__status">
-          API:{' '}
-          {health === null
-            ? '…'
-            : health.status === 'ok'
-              ? 'подключён'
-              : 'ошибка'}
-          {health?.cache ? ` · кэш ${health.cache}` : ''}
+        <div className="header-right">
+          <div className="market-status">
+            <div className="status-dot" style={{ background: marketStatus.isOpen ? 'var(--green2)' : 'var(--text3)' }} />
+            <span>{marketStatus.isOpen ? 'Биржа открыта' : 'Биржа закрыта'}</span>
+          </div>
+          <div className="update-time">Обновлено: {marketStatus.time}</div>
         </div>
       </header>
-
-      <section className="headline">
-        <h1>
-          Поиск и фильтрация <span>инструментов</span>
-        </h1>
-        <p>Данные Московской биржи через REST API · обновление коллектором каждые 30 мин</p>
-      </section>
-
-      <section className="summary-row">
-        {summary.map((item) => (
-          <article key={item.label} className="summary-cell">
-            <div className="summary-cell__value">{formatNumber(item.value)}</div>
-            <div className="summary-cell__label">{item.label}</div>
-          </article>
-        ))}
-      </section>
-
-      <div className="workspace">
-        <aside className="filters-panel">
-          <div className="filters-section">
-            <div className="filters-title">Тип инструмента</div>
-            <div className="chip-grid">
-              {INSTRUMENT_TYPES.map((item) => (
-                <FilterChip
-                  key={item.id || 'all'}
-                  active={filters.type === item.id}
-                  onClick={() => updateFilter('type', item.id)}
-                >
-                  {item.label}
-                </FilterChip>
+      <div className="hero">
+        <div className="hero-top"><div>
+          <div className="hero-title">Подбор <span>финансовых инструментов</span></div>
+          <div className="hero-sub">Акции · Облигации · Фьючерсы · Опционы — данные Московской биржи</div>
+        </div></div>
+        <div className="stats-row">
+          {[{ l: 'Всего', v: counts.total }, { l: 'Акций', v: counts.stock }, { l: 'Облигаций', v: counts.bond }, { l: 'Фьючерсов', v: counts.futures }, { l: 'Опционов', v: counts.option }].map(s => (
+            <div className="stat-cell" key={s.l}>
+              <div className="stat-num">{s.v ? s.v.toLocaleString('ru') : '—'}</div>
+              <div className="stat-label">{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="layout">
+        <aside className="sidebar">
+          <div className="s-section">
+            <div className="s-label">Тип инструмента</div>
+            <div className="type-list">
+              {TYPES.map(t => (
+                <div key={t.id || 'all'} className={`type-row${curType === t.id ? ' active' : ''}`} onClick={() => selectType(t.id)}>
+                  <div className="type-indicator" />
+                  <span className="type-name">{t.label}</span>
+                  <span className="type-count">{t.id ? (counts[t.id] ? counts[t.id].toLocaleString('ru') : '—') : (counts.total ? counts.total.toLocaleString('ru') : '—')}</span>
+                </div>
               ))}
             </div>
           </div>
-
-          <div className="filters-section">
-            <div className="filters-title">Цена</div>
-            <div className="range-row">
-              <label className="field">
-                <span>От</span>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  value={filters.min_price}
-                  onChange={(e) => updateFilter('min_price', e.target.value)}
-                />
-              </label>
-              <label className="field">
-                <span>До</span>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="∞"
-                  value={filters.max_price}
-                  onChange={(e) => updateFilter('max_price', e.target.value)}
-                />
-              </label>
+          <hr className="s-divider" />
+          <div className="s-section">
+            <div className="s-label">Основные фильтры</div>
+            <div className="f-group"><div className="f-label">Цена, ₽</div>
+              <div className="f-row">
+                <input type="number" placeholder="от" min="0" value={fMinP} onChange={e => setFMinP(e.target.value)} />
+                <span className="f-sep">—</span>
+                <input type="number" placeholder="до" min="0" value={fMaxP} onChange={e => setFMaxP(e.target.value)} />
+              </div>
             </div>
-          </div>
-
-          <div className="filters-section">
-            <div className="filters-title">Доходность</div>
-            <div className="range-row">
-              <label className="field">
-                <span>От, %</span>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.1"
-                  value={filters.min_yield}
-                  onChange={(e) => updateFilter('min_yield', e.target.value)}
-                />
-              </label>
-              <label className="field">
-                <span>До, %</span>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.1"
-                  value={filters.max_yield}
-                  onChange={(e) => updateFilter('max_yield', e.target.value)}
-                />
-              </label>
+            <div className="f-group"><div className="f-label">Доходность, %</div>
+              <div className="f-row">
+                <input type="number" placeholder="от" step="0.1" value={fMinY} onChange={e => setFMinY(e.target.value)} />
+                <span className="f-sep">—</span>
+                <input type="number" placeholder="до" step="0.1" value={fMaxY} onChange={e => setFMaxY(e.target.value)} />
+              </div>
             </div>
+            <button type="button" className={`adv-toggle${showAdv ? ' open' : ''}`} onClick={() => setShowAdv(v => !v)}>
+              <span className="adv-arrow">▾</span> Расширенные фильтры
+            </button>
+            {showAdv && <div className="adv-body">
+              <div className="f-group"><div className="f-label">Срок погашения</div>
+                <div className="f-row">
+                  <input type="date" style={{ fontSize: '11px' }} value={fD1} onChange={e => setFD1(e.target.value)} />
+                  <span className="f-sep">—</span>
+                  <input type="date" style={{ fontSize: '11px' }} value={fD2} onChange={e => setFD2(e.target.value)} />
+                </div>
+              </div>
+              <div className="f-group"><div className="f-label">Тип опциона</div>
+                <select value={fOpt} onChange={e => setFOpt(e.target.value)}>
+                  <option value="">Все</option><option value="C">Call</option><option value="P">Put</option>
+                </select>
+              </div>
+            </div>}
           </div>
-
-          <div className="filters-section">
-            <div className="filters-title">Погашение</div>
-            <label className="field">
-              <span>С</span>
-              <input
-                type="date"
-                value={filters.maturity_from}
-                onChange={(e) => updateFilter('maturity_from', e.target.value)}
-              />
-            </label>
-            <label className="field">
-              <span>По</span>
-              <input
-                type="date"
-                value={filters.maturity_to}
-                onChange={(e) => updateFilter('maturity_to', e.target.value)}
-              />
-            </label>
+          <div style={{ marginTop: '8px' }}>
+            <button className="btn-search" onClick={applyFilters}>Применить</button>
+            <button className="btn-clear" onClick={resetFilters}>Сбросить</button>
           </div>
-
-          <div className="filters-section">
-            <div className="filters-title">Сектор</div>
-            <label className="field">
-              <span>Точное совпадение</span>
-              <input
-                type="text"
-                placeholder="например, IT"
-                value={filters.sector}
-                onChange={(e) => updateFilter('sector', e.target.value)}
-              />
-            </label>
-          </div>
-
-          <div className="filters-section">
-            <div className="filters-title">Сортировка</div>
-            <label className="field">
-              <span>Поле</span>
-              <select
-                value={filters.sort_by}
-                onChange={(e) => updateFilter('sort_by', e.target.value)}
-              >
-                {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.id} value={opt.id}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="chip-grid">
-              <FilterChip
-                active={filters.order === 'asc'}
-                onClick={() => updateFilter('order', 'asc')}
-              >
-                ↑ По возрастанию
-              </FilterChip>
-              <FilterChip
-                active={filters.order === 'desc'}
-                onClick={() => updateFilter('order', 'desc')}
-              >
-                ↓ По убыванию
-              </FilterChip>
-            </div>
-          </div>
-
-          <button type="button" className="apply-button" onClick={resetFilters}>
-            Сбросить фильтры
-          </button>
         </aside>
-
-        <main className="results-panel">
-          <div className="results-search">
-            <input
-              type="search"
-              placeholder="Поиск по тикеру или названию…"
-              value={search}
-              onChange={(e) => {
-                setOffset(0)
-                setSearch(e.target.value)
-              }}
-            />
+        <main className="content">
+          <div className="search-wrap">
+            <input className="search-input" type="text" placeholder="Поиск по тикеру или названию..." value={search} onChange={onSearch} />
+            <span className="search-ico">⌕</span>
           </div>
-
-          <div className="results-toolbar">
-            <div className="results-meta">
-              {loading ? 'Загрузка…' : `Показано ${instruments.length} из ${formatNumber(listTotal)}`}
-              {searchMode ? ' · режим поиска' : ''}
+          <div className="toolbar">
+            <div className="sort-pills">
+              <span className="sort-label">Сортировка:</span>
+              {SORTS.map((s, i) => (
+                <div key={i} className={`pill${sortKey === i ? ' active' : ''}`} onClick={() => selectSort(i)}>{s.label}</div>
+              ))}
             </div>
-            {!searchMode && (
-              <div className="results-meta">
-                <button
-                  type="button"
-                  className="filter-chip"
-                  disabled={offset === 0 || loading}
-                  onClick={() => setOffset((v) => Math.max(0, v - PAGE_SIZE))}
-                >
-                  ← Назад
-                </button>
-                <span>
-                  {page} / {totalPages}
-                </span>
-                <button
-                  type="button"
-                  className="filter-chip"
-                  disabled={offset + PAGE_SIZE >= listTotal || loading}
-                  onClick={() => setOffset((v) => v + PAGE_SIZE)}
-                >
-                  Вперёд →
-                </button>
-              </div>
-            )}
+            <div className="toolbar-right">
+              <span className="found-count">Найдено: <b>{total.toLocaleString('ru')}</b></span>
+              <select className="per-page-select" value={perPage} onChange={e => { setPerPage(+e.target.value); setCurPage(0) }}>
+                <option value={20}>20</option><option value={50}>50</option><option value={100}>100</option>
+              </select>
+            </div>
           </div>
-
-          {error && <p className="api-error">{error}</p>}
-
-          <div className="table-wrap">
-            <table className="bonds-table">
-              <thead>
-                <tr>
-                  <th>Инструмент</th>
-                  <th>Тип</th>
-                  <th>Эмитент / сектор</th>
-                  <th>Цена</th>
-                  <th>Доходность</th>
-                  <th>Объём</th>
-                  <th>Погашение</th>
-                </tr>
-              </thead>
-              <tbody>
-                {!loading && instruments.length === 0 && (
-                  <tr>
-                    <td colSpan={7}>Ничего не найдено. Измените фильтры или запустите коллектор.</td>
-                  </tr>
-                )}
-                {instruments.map((row) => (
-                  <tr
-                    key={row.ticker}
-                    className={selected?.ticker === row.ticker ? 'is-selected' : ''}
-                    onClick={() => setSelected(row)}
-                  >
-                    <td>
-                      <div className="instrument-cell">
-                        <div className="instrument-line" />
-                        <div>
-                          <div className="instrument-ticker">{row.ticker}</div>
-                          <div className="issuer-sub">{row.name}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="instrument-badge">
-                        {TYPE_LABELS[row.type] ?? row.type}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="issuer-name">{row.issuer ?? '—'}</div>
-                      <div className="issuer-sub">{row.sector ?? '—'}</div>
-                    </td>
-                    <td className="numeric-cell">
-                      {formatNumber(row.price)} {row.currency ?? ''}
-                    </td>
-                    <td className="numeric-cell">{formatPercent(row.yield)}</td>
-                    <td className="numeric-cell">{formatNumber(row.volume)}</td>
-                    <td className="numeric-cell">{formatDate(row.maturity_date)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="table-header">
+            <div className="th">Инструмент</div>
+            <div className="th">Название</div>
+            <div className="th right">Цена</div>
+            <div className="th right">Объём</div>
+            <div className="th right">Доп. инфо</div>
           </div>
-
-          {selected && (
-            <section className="details-inline">
-              <div>
-                <span>Выбранный инструмент</span>
-                <strong>
-                  {selected.ticker} — {selected.name}
-                </strong>
-              </div>
-              <div>
-                <span>Капитализация</span>
-                <strong>{formatNumber(selected.market_cap)}</strong>
-              </div>
-              <div>
-                <span>Страйк / тип опциона</span>
-                <strong>
-                  {formatNumber(selected.strike_price)} / {selected.option_type ?? '—'}
-                </strong>
-              </div>
-              <div>
-                <span>Волатильность</span>
-                <strong>{formatPercent(selected.volatility)}</strong>
-              </div>
-              <div>
-                <span>Обновлено</span>
-                <strong>{formatDate(selected.updated_at)}</strong>
-              </div>
-            </section>
-          )}
+          <div className="cards">
+            {loading && Array.from({ length: 6 }).map((_, i) => <div className="skel" key={i} />)}
+            {!loading && instruments.length === 0 && <div className="empty-msg">Ничего не найдено. Измените фильтры или запустите коллектор.</div>}
+            {!loading && instruments.map(item => {
+              const type = item.type || ''
+              const hasPrice = item.price > 0
+              const stripe = STRIPE_COLOR[type] || '#555'
+              let extra = <span className="card-extra">—</span>
+              if (item.yield) extra = <span className="card-extra yield-val">{item.yield}%</span>
+              else if (item.maturity_date) extra = <span className="card-extra maturity">{item.maturity_date}</span>
+              else if (item.strike_price) extra = <span className="card-extra">{Number(item.strike_price).toLocaleString('ru')} ₽</span>
+              else if (item.option_type) extra = <span className="card-extra">{item.option_type === 'C' ? 'Call' : 'Put'}</span>
+              const meta = []
+              if (item.issuer) meta.push(item.issuer)
+              if (item.sector) meta.push(item.sector)
+              return (
+                <div className={`card${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
+                  <div className="card-ticker-col">
+                    <div className="card-stripe" style={{ background: stripe }} />
+                    <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                  </div>
+                  <div className="card-name-col">
+                    <div className="card-name">{item.name || '—'}</div>
+                    {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
+                  </div>
+                  <div className="card-price-col">
+                    <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{hasPrice ? fmt(item.price) + ' ₽' : 'нет данных'}</div>
+                    <div className="card-currency">{item.currency || ''}</div>
+                  </div>
+                  <div className="card-vol-col"><div className="card-vol">{fmtVol(item.volume)}</div></div>
+                  <div className="card-extra-col">{extra}</div>
+                </div>
+              )
+            })}
+          </div>
+          {pages > 1 && <div className="pagination">
+            {Array.from({ length: pe - ps }, (_, i) => {
+              const p = ps + i
+              return <div key={p} className={`pg${p === curPage ? ' active' : ''}`} onClick={() => goPage(p)}>{p + 1}</div>
+            })}
+          </div>}
         </main>
       </div>
-    </div>
+      {modal && <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) closeModal() }}>
+        <div className="modal">
+          <button className="modal-close" onClick={closeModal}>×</button>
+          {modalLoading ? <div className="loading"><div className="spinner" /> Загрузка...</div>
+            : modal.error ? <div className="modal-eyebrow">Ошибка загрузки</div>
+              : <>
+                <div className="modal-eyebrow">{TYPE_LABEL[modal.type] || modal.type}</div>
+                <div className="modal-title">{modal.ticker}</div>
+                <div className="modal-subtitle">{modal.name || ''}</div>
+                <div className="modal-grid">
+                  <div className="modal-cell"><div className="modal-cell-label">Цена</div><div className="modal-cell-val">{modal.price ? fmt(modal.price) + ' ₽' : '—'}</div></div>
+                  <div className="modal-cell"><div className="modal-cell-label">Объём</div><div className="modal-cell-val">{fmtVol(modal.volume)}</div></div>
+                  <div className="modal-cell"><div className="modal-cell-label">Валюта</div><div className="modal-cell-val">{modal.currency || '—'}</div></div>
+                </div>
+                <div className="modal-details">
+                  {modal.issuer && <div className="modal-detail-item"><div className="modal-detail-label">Эмитент</div><div className="modal-detail-val">{modal.issuer}</div></div>}
+                  {modal.sector && <div className="modal-detail-item"><div className="modal-detail-label">Сектор</div><div className="modal-detail-val">{modal.sector}</div></div>}
+                  {modal.yield && <div className="modal-detail-item"><div className="modal-detail-label">Доходность</div><div className="modal-detail-val">{modal.yield}%</div></div>}
+                  {modal.maturity_date && <div className="modal-detail-item"><div className="modal-detail-label">Погашение</div><div className="modal-detail-val">{modal.maturity_date}</div></div>}
+                  {modal.market_cap && <div className="modal-detail-item"><div className="modal-detail-label">Капитализация</div><div className="modal-detail-val">{fmtVol(modal.market_cap)} ₽</div></div>}
+                  {modal.strike_price && <div className="modal-detail-item"><div className="modal-detail-label">Страйк</div><div className="modal-detail-val">{Number(modal.strike_price).toLocaleString('ru')} ₽</div></div>}
+                  {modal.option_type && <div className="modal-detail-item"><div className="modal-detail-label">Тип опциона</div><div className="modal-detail-val">{modal.option_type === 'C' ? 'Call' : 'Put'}</div></div>}
+                  {modal.volatility && <div className="modal-detail-item"><div className="modal-detail-label">Волатильность</div><div className="modal-detail-val">{modal.volatility}</div></div>}
+                </div>
+                {modal.updated_at && <div className="modal-updated">Последнее обновление: {new Date(modal.updated_at).toLocaleString('ru')}</div>}
+              </>}
+        </div>
+      </div>}
+      <div className={`toast${toastMsg ? ' show' : ''}`}>{toastMsg}</div>
+    </>
   )
 }
