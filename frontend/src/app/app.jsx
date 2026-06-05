@@ -125,7 +125,17 @@ export default function App() {
         p.set('offset', String(curPage * perPage))
         const r = await fetch(`${API}/instruments?${p}`)
         data = await r.json()
-        tot = data.length < perPage ? curPage * perPage + data.length : curPage * perPage + data.length + 1
+        // Если получили меньше чем perPage — это последняя страница
+        if (data.length < perPage) {
+          tot = curPage * perPage + data.length
+        } else {
+          // Получили полную порцию — возможно есть ещё страницы
+          tot = curPage * perPage + data.length + 1
+        }
+        // Если на первой странице есть данные, но total не установлен — гарантируем 1 страницу
+        if (curPage === 0 && data.length > 0 && (!tot || tot === 0)) {
+          tot = perPage + 1
+        }
       }
       setInstruments(data)
       setTotal(tot)
@@ -165,6 +175,7 @@ export default function App() {
   function applyFilters() { setCurPage(0) }
   function resetFilters() {
     setSearch(''); setFMinP(''); setFMaxP(''); setFMinY(''); setFMaxY('')
+    setFD1(''); setFD2(''); setFOpt('')
     setCurType(''); setCurPage(0); setSortKey(0)
   }
   function goPage(p) { setCurPage(p); window.scrollTo({ top: 160, behavior: 'smooth' }) }
@@ -222,14 +233,6 @@ export default function App() {
           <div className="hero-title">Подбор <span>финансовых инструментов</span></div>
           <div className="hero-sub">Акции · Облигации · Фьючерсы · Опционы — данные Московской биржи</div>
         </div></div>
-        <div className="stats-row">
-          {[{ l: 'Всего', v: counts.total }, { l: 'Акций', v: counts.stock }, { l: 'Облигаций', v: counts.bond }, { l: 'Фьючерсов', v: counts.futures }, { l: 'Опционов', v: counts.option }].map(s => (
-            <div className="stat-cell" key={s.l}>
-              <div className="stat-num">{s.v ? s.v.toLocaleString('ru') : '—'}</div>
-              <div className="stat-label">{s.l}</div>
-            </div>
-          ))}
-        </div>
       </div>
       <div className="layout">
         <aside className="sidebar">
@@ -255,29 +258,43 @@ export default function App() {
                 <input type="number" placeholder="до" min="0" value={fMaxP} onChange={e => setFMaxP(e.target.value)} />
               </div>
             </div>
-            <div className="f-group"><div className="f-label">Доходность, %</div>
+            {curType === 'bond' && <div className="f-group"><div className="f-label">Доходность, %</div>
               <div className="f-row">
                 <input type="number" placeholder="от" step="0.1" value={fMinY} onChange={e => setFMinY(e.target.value)} />
                 <span className="f-sep">—</span>
                 <input type="number" placeholder="до" step="0.1" value={fMaxY} onChange={e => setFMaxY(e.target.value)} />
               </div>
-            </div>
-            <button type="button" className={`adv-toggle${showAdv ? ' open' : ''}`} onClick={() => setShowAdv(v => !v)}>
+            </div>}
+            {(curType === 'bond' || curType === 'option') && <button type="button" className={`adv-toggle${showAdv ? ' open' : ''}`} onClick={() => setShowAdv(v => !v)}>
               <span className="adv-arrow">▾</span> Расширенные фильтры
-            </button>
+            </button>}
             {showAdv && <div className="adv-body">
-              <div className="f-group"><div className="f-label">Срок погашения</div>
+              {(curType === 'bond' || curType === 'futures') && <div className="f-group"><div className="f-label">Срок погашения</div>
                 <div className="f-row">
                   <input type="date" style={{ fontSize: '11px' }} value={fD1} onChange={e => setFD1(e.target.value)} />
                   <span className="f-sep">—</span>
                   <input type="date" style={{ fontSize: '11px' }} value={fD2} onChange={e => setFD2(e.target.value)} />
                 </div>
-              </div>
-              <div className="f-group"><div className="f-label">Тип опциона</div>
+              </div>}
+              {curType === 'option' && <div className="f-group"><div className="f-label">Тип опциона</div>
                 <select value={fOpt} onChange={e => setFOpt(e.target.value)}>
                   <option value="">Все</option><option value="C">Call</option><option value="P">Put</option>
                 </select>
-              </div>
+              </div>}
+              {curType === 'option' && <div className="f-group"><div className="f-label">Срок погашения</div>
+                <div className="f-row">
+                  <input type="date" style={{ fontSize: '11px' }} value={fD1} onChange={e => setFD1(e.target.value)} />
+                  <span className="f-sep">—</span>
+                  <input type="date" style={{ fontSize: '11px' }} value={fD2} onChange={e => setFD2(e.target.value)} />
+                </div>
+              </div>}
+              {curType === 'bond' && <div className="f-group"><div className="f-label">Доходность, % (доп.)</div>
+                <div className="f-row">
+                  <input type="number" placeholder="от" step="0.1" value={fMinY} onChange={e => setFMinY(e.target.value)} />
+                  <span className="f-sep">—</span>
+                  <input type="number" placeholder="до" step="0.1" value={fMaxY} onChange={e => setFMaxY(e.target.value)} />
+                </div>
+              </div>}
             </div>}
           </div>
           <div style={{ marginTop: '8px' }}>
@@ -313,7 +330,11 @@ export default function App() {
           </div>
           <div className="cards">
             {loading && Array.from({ length: 6 }).map((_, i) => <div className="skel" key={i} />)}
-            {!loading && instruments.length === 0 && <div className="empty-msg">Ничего не найдено. Измените фильтры или запустите коллектор.</div>}
+            {!loading && instruments.length === 0 && <div className="empty-msg">
+              {total === 0
+                ? 'Инструменты не найдены. Проверьте подключение к API или запустите коллектор данных.'
+                : 'Ничего не найдено. Измените фильтры.'}
+            </div>}
             {!loading && instruments.map(item => {
               const type = item.type || ''
               const hasPrice = item.price > 0
@@ -347,11 +368,18 @@ export default function App() {
             })}
           </div>
           {pages > 1 && <div className="pagination">
+            <div className={`pg${curPage === 0 ? ' disabled' : ''}`} onClick={() => curPage > 0 && goPage(0)}>«</div>
+            <div className={`pg${curPage === 0 ? ' disabled' : ''}`} onClick={() => curPage > 0 && goPage(curPage - 1)} title="Предыдущая">‹</div>
+            {ps > 0 && <><div className="pg">1</div><div className="pg dots">…</div></>}
             {Array.from({ length: pe - ps }, (_, i) => {
               const p = ps + i
               return <div key={p} className={`pg${p === curPage ? ' active' : ''}`} onClick={() => goPage(p)}>{p + 1}</div>
             })}
+            {pe < pages && <><div className="pg dots">…</div><div className="pg">{pages}</div></>}
+            <div className={`pg${curPage >= pages - 1 ? ' disabled' : ''}`} onClick={() => curPage < pages - 1 && goPage(curPage + 1)} title="Следующая">›</div>
+            <div className={`pg${curPage >= pages - 1 ? ' disabled' : ''}`} onClick={() => curPage < pages - 1 && goPage(pages - 1)} title="Последняя">»</div>
           </div>}
+          {instruments.length > 0 && <div className="pagination-info">Страница <b>{curPage + 1}</b> из <b>{Math.max(pages, 1)}</b></div>}
         </main>
       </div>
       {modal && <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) closeModal() }}>
