@@ -34,55 +34,33 @@ FastAPI-приложение для сбора данных с MOEX ISS API, х�
 ### 1. Требования
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (4.0+)
-- **Git Bash** + `make` — для Linux/macOS/WSL
-- Или **PowerShell** — для Windows без Git Bash
+- **Python 3.8+**
 
-### 2. Запуск (3 варианта)
-
-#### Вариант A: Makefile (Linux / macOS / WSL / Git Bash с make)
+### 2. Запуск
 
 ```bash
-make build
-make up
-make status
+python docker_manage.py build
+python docker_manage.py up
+python docker_manage.py status
 ```
 
-#### Вариант B: run.sh (Git Bash без make)
-
-```bash
-chmod +x run.sh
-./run.sh build
-./run.sh up
-./run.sh status
-```
-
-#### Вариант C: run.ps1 (PowerShell на Windows)
-
-```powershell
-.\run.ps1 build
-.\run.ps1 up
-.\run.ps1 status
-```
-
-> Все три варианта автоматически создают `backend/.env` из `.env.example`, если его нет.
+> Скрипт автоматически создаёт `backend/.env` из `.env.example`, если его нет.
 
 ### 3. Проверка
 
 ```bash
 # Статус контейнеров
-make status
+python docker_manage.py status
 
 # Логи
-make logs
+python docker_manage.py logs
 
 # Логи только коллектора
-make logs-collector
+python docker_manage.py logs-collector
+```
 
 # API health-check
 curl http://localhost:8000/health
-```
-
----
 
 ## Все команды
 
@@ -215,10 +193,10 @@ pytest --cov=app --cov=collector --cov-report=term-missing
 
 ```bash
 # Проверить логи
-make logs-collector
+python docker_manage.py logs-collector
 
 # Перезапустить
-make restart-collector
+python docker_manage.py restart-collector
 ```
 
 ### БД не готова
@@ -250,8 +228,8 @@ quit
 ### Очистка и полный перезапуск
 
 ```bash
-make down
-make rebuild
+python docker_manage.py down
+python docker_manage.py rebuild
 ```
 
 ### Порт 8000 уже занят
