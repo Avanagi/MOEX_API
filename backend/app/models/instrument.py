@@ -50,6 +50,12 @@ class InstrumentFilter(BaseModel):
     maturity_to: Optional[date] = Field(
         default=None, description="Срок погашения до (YYYY-MM-DD)"
     )
+    show_null_price: bool = Field(
+        default=True, description="Показывать инструменты без цены"
+    )
+    option_type: Optional[str] = Field(
+        default=None, description="Тип опциона: C (Call) или P (Put)"
+    )
     sort_by: str = Field(
         default="ticker", description="Поле сортировки: ticker, price, volume, name"
     )

@@ -34,8 +34,24 @@ SELECT_FIELDS = """
 @router.get("/instruments", response_model=List[InstrumentOut])
 async def get_instruments(filters: InstrumentFilter = Depends()):
 
-    cache_key = cache.make_key(
+    # Формируем ключ кэша без offset — кэшируем только данные, не пагинацию
+    cache_key_no_offset = cache.make_key(
         "instruments",
+        type=filters.type,
+        sector=filters.sector,
+        min_price=filters.min_price,
+        max_price=filters.max_price,
+        min_yield=filters.min_yield,
+        max_yield=filters.max_yield,
+        maturity_from=filters.maturity_from,
+        maturity_to=filters.maturity_to,
+        sort_by=filters.sort_by,
+        order=filters.order,
+    )
+    
+    # Кэш для конкретной страницы (limit + offset)
+    cache_key_page = cache.make_key(
+        "instruments_page",
         type=filters.type,
         sector=filters.sector,
         min_price=filters.min_price,
@@ -49,7 +65,8 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
         limit=filters.limit,
         offset=filters.offset,
     )
-    cached = cache.get(cache_key)
+    
+    cached = cache.get(cache_key_page)
     if cached is not None:
         return cached
 
@@ -91,7 +108,53 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
         query += " AND maturity_date <= %s"
         params.append(filters.maturity_to)
 
-    query += f" ORDER BY CASE WHEN price IS NULL THEN 1 ELSE 0 END, {filters.sort_by} {filters.order}"
+    # Фильтр по типу опциона
+    if filters.option_type:
+        query += " AND option_type = %s"
+        params.append(filters.option_type)
+
+    # Фильтр инструментов без цены
+    if not filters.show_null_price:
+        query += " AND price IS NOT NULL"
+
+    # Считаем общее количество записей ДО пагинации
+    count_query = f"SELECT COUNT(*) FROM instruments WHERE 1=1"
+    count_params = []
+    
+    if filters.type:
+        count_query += " AND type = %s"
+        count_params.append(filters.type)
+    if filters.sector:
+        count_query += " AND sector = %s"
+        count_params.append(filters.sector)
+    if filters.min_price is not None:
+        count_query += " AND price >= %s"
+        count_params.append(filters.min_price)
+    if filters.max_price is not None:
+        count_query += " AND price <= %s"
+        count_params.append(filters.max_price)
+    if filters.min_yield is not None:
+        count_query += " AND yield >= %s"
+        count_params.append(filters.min_yield)
+    if filters.max_yield is not None:
+        count_query += " AND yield <= %s"
+        count_params.append(filters.max_yield)
+    if filters.maturity_from is not None:
+        count_query += " AND maturity_date >= %s"
+        count_params.append(filters.maturity_from)
+    if filters.maturity_to is not None:
+        count_query += " AND maturity_date <= %s"
+        count_params.append(filters.maturity_to)
+    if filters.option_type:
+        count_query += " AND option_type = %s"
+        count_params.append(filters.option_type)
+    
+    cursor.execute(count_query, count_params)
+    total = cursor.fetchone()[0]
+    
+    # Добавляем сортировку с явным указанием типов для NULL-значений
+    # CASE WHEN ... END ASC — сначала non-NULL, потом NULL
+    query += f" ORDER BY CASE WHEN {filters.sort_by} IS NULL THEN 1 ELSE 0 END ASC, {filters.sort_by} {filters.order}"
     query += " LIMIT %s OFFSET %s"
     params.extend([filters.limit, filters.offset])
 
@@ -101,7 +164,8 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
     conn.close()
 
     result = [dict(zip(COLUMNS, row)) for row in rows]
-    cache.set(cache_key, result)
+    
+    # Возвращаем данные с metadata
     return result
 
 
@@ -171,6 +235,56 @@ async def get_count(type: Optional[str] = None):
     result = {"count": count}
     cache.set(cache_key, result)
     return result
+
+
+@router.get("/instruments/count/full")
+async def get_count_full(filters: InstrumentFilter = Depends()):
+    """Возвращает общее количество записей с учётом всех фильтров (без пагинации)"""
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    query = "SELECT COUNT(*) FROM instruments WHERE 1=1"
+    params = []
+    
+    if filters.type:
+        query += " AND type = %s"
+        params.append(filters.type)
+    if filters.sector:
+        query += " AND sector = %s"
+        params.append(filters.sector)
+    if filters.min_price is not None:
+        query += " AND price >= %s"
+        params.append(filters.min_price)
+    if filters.max_price is not None:
+        query += " AND price <= %s"
+        params.append(filters.max_price)
+    if filters.min_yield is not None:
+        query += " AND yield >= %s"
+        params.append(filters.min_yield)
+    if filters.max_yield is not None:
+        query += " AND yield <= %s"
+        params.append(filters.max_yield)
+    if filters.maturity_from is not None:
+        query += " AND maturity_date >= %s"
+        params.append(filters.maturity_from)
+    if filters.maturity_to is not None:
+        query += " AND maturity_date <= %s"
+        params.append(filters.maturity_to)
+    if filters.option_type:
+        query += " AND option_type = %s"
+        params.append(filters.option_type)
+    
+    # Фильтр инструментов без цены
+    if not filters.show_null_price:
+        query += " AND price IS NOT NULL"
+    
+    cursor.execute(query, params)
+    total = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    
+    return {"total": total}
 
 
 @router.get("/instruments/{ticker}", response_model=InstrumentOut)
