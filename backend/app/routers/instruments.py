@@ -113,6 +113,14 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
         query += " AND option_type = %s"
         params.append(filters.option_type)
 
+    if filters.min_strike is not None:
+        query += " AND strike_price >= %s"
+        params.append(filters.min_strike)
+
+    if filters.max_strike is not None:
+        query += " AND strike_price <= %s"
+        params.append(filters.max_strike)
+
     # Фильтр инструментов без цены
     if not filters.show_null_price:
         query += " AND price IS NOT NULL"
@@ -148,6 +156,12 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
     if filters.option_type:
         count_query += " AND option_type = %s"
         count_params.append(filters.option_type)
+    if filters.min_strike is not None:
+        count_query += " AND strike_price >= %s"
+        count_params.append(filters.min_strike)
+    if filters.max_strike is not None:
+        count_query += " AND strike_price <= %s"
+        count_params.append(filters.max_strike)
     
     cursor.execute(count_query, count_params)
     total = cursor.fetchone()[0]
@@ -191,7 +205,7 @@ async def search_instruments(
         query += " AND type = %s"
         params.append(type)
 
-    if sort_by and sort_by in {"ticker", "price", "volume", "name", "market_cap"}:
+    if sort_by and sort_by in {"ticker", "price", "volume", "name", "market_cap", "strike_price"}:
         sort_order = "DESC" if order == "desc" else "ASC"
         query += f" ORDER BY CASE WHEN price IS NULL THEN 1 ELSE 0 END, {sort_by} {sort_order}"
     else:
@@ -274,6 +288,12 @@ async def get_count_full(filters: InstrumentFilter = Depends()):
     if filters.option_type:
         query += " AND option_type = %s"
         params.append(filters.option_type)
+    if filters.min_strike is not None:
+        query += " AND strike_price >= %s"
+        params.append(filters.min_strike)
+    if filters.max_strike is not None:
+        query += " AND strike_price <= %s"
+        params.append(filters.max_strike)
     
     # Фильтр инструментов без цены
     if not filters.show_null_price:

@@ -17,12 +17,14 @@ const TYPES = [
   { id: 'option', label: 'Опционы' },
 ]
 
-const SORTS = [
+const ALL_SORTS = [
   { sort: 'ticker', order: 'asc', label: 'Тикер A→Z' },
   { sort: 'price', order: 'desc', label: 'Цена ↓' },
   { sort: 'price', order: 'asc', label: 'Цена ↑' },
   { sort: 'volume', order: 'desc', label: 'Объём ↓' },
   { sort: 'market_cap', order: 'desc', label: 'Капитализация ↓' },
+  { sort: 'strike_price', order: 'desc', label: 'Страйк ↓' },
+  { sort: 'strike_price', order: 'asc', label: 'Страйк ↑' },
 ]
 
 function fmt(v, d = 2) {
@@ -65,6 +67,8 @@ export default function App() {
   const [showAdv, setShowAdv] = useState(false)
   const [fMinP, setFMinP] = useState('')
   const [fMaxP, setFMaxP] = useState('')
+  const [fMinS, setFMinS] = useState('')
+  const [fMaxS, setFMaxS] = useState('')
   const [fMinY, setFMinY] = useState('')
   const [fMaxY, setFMaxY] = useState('')
   const [fD1, setFD1] = useState('')
@@ -74,6 +78,9 @@ export default function App() {
   const [showNullPriceFilter, setShowNullPriceFilter] = useState(true)
   const searchTimer = useRef(null)
   const toastTimer = useRef(null)
+  const SORTS = curType === 'option'
+    ? ALL_SORTS.filter(s => s.sort === 'ticker' || s.sort === 'strike_price')
+    : ALL_SORTS.filter(s => s.sort !== 'strike_price')
   const curSort = SORTS[sortKey].sort
   const curOrder = SORTS[sortKey].order
 
@@ -118,8 +125,13 @@ export default function App() {
       } else {
         const p = new URLSearchParams()
         if (curType) p.set('type', curType)
-        if (fMinP) p.set('min_price', fMinP)
-        if (fMaxP) p.set('max_price', fMaxP)
+        if (curType === 'option') {
+          if (fMinS) p.set('min_strike', fMinS)
+          if (fMaxS) p.set('max_strike', fMaxS)
+        } else {
+          if (fMinP) p.set('min_price', fMinP)
+          if (fMaxP) p.set('max_price', fMaxP)
+        }
         if (fMinY) p.set('min_yield', fMinY)
         if (fMaxY) p.set('max_yield', fMaxY)
         if (fD1) p.set('maturity_from', fD1)
@@ -135,8 +147,13 @@ export default function App() {
         // Получаем общее количество из отдельного эндпоинта
         const countP = new URLSearchParams()
         if (curType) countP.set('type', curType)
-        if (fMinP) countP.set('min_price', fMinP)
-        if (fMaxP) countP.set('max_price', fMaxP)
+        if (curType === 'option') {
+          if (fMinS) countP.set('min_strike', fMinS)
+          if (fMaxS) countP.set('max_strike', fMaxS)
+        } else {
+          if (fMinP) countP.set('min_price', fMinP)
+          if (fMaxP) countP.set('max_price', fMaxP)
+        }
         if (fMinY) countP.set('min_yield', fMinY)
         if (fMaxY) countP.set('max_yield', fMaxY)
         if (fD1) countP.set('maturity_from', fD1)
@@ -156,7 +173,7 @@ export default function App() {
     } finally {
       setLoading(false)
     }
-  }, [search, curType, curSort, curOrder, curPage, perPage, fMinP, fMaxP, fMinY, fMaxY, fD1, fD2, showNullPriceFilter, fOpt])
+  }, [search, curType, curSort, curOrder, curPage, perPage, fMinS, fMaxS, fMinY, fMaxY, fD1, fD2, showNullPriceFilter, fOpt])
 
   useEffect(() => {
     loadStats()
@@ -184,7 +201,7 @@ export default function App() {
   function selectSort(idx) { setSortKey(idx); setCurPage(0) }
   function applyFilters() { setCurPage(0) }
   function resetFilters() {
-    setSearch(''); setFMinP(''); setFMaxP(''); setFMinY(''); setFMaxY('')
+    setSearch(''); setFMinP(''); setFMaxP(''); setFMinS(''); setFMaxS(''); setFMinY(''); setFMaxY('')
     setFD1(''); setFD2(''); setFOpt('')
     setShowNullPriceFilter(true)
     setCurType(''); setCurPage(0); setSortKey(0)
@@ -262,18 +279,28 @@ export default function App() {
           <hr className="s-divider" />
           <div className="s-section">
             <div className="s-label">Основные фильтры</div>
-            <div className="f-group"><div className="f-label">Цена, ₽</div>
-              <div className="f-row">
-                <input type="number" placeholder="от" min="0" value={fMinP} onChange={e => setFMinP(e.target.value)} />
-                <span className="f-sep">—</span>
-                <input type="number" placeholder="до" min="0" value={fMaxP} onChange={e => setFMaxP(e.target.value)} />
+            {curType === 'option' ? (
+              <div className="f-group"><div className="f-label">Страйк, ₽</div>
+                <div className="f-row">
+                  <input type="number" placeholder="от" min="0" value={fMinS} onChange={e => setFMinS(e.target.value)} />
+                  <span className="f-sep">—</span>
+                  <input type="number" placeholder="до" min="0" value={fMaxS} onChange={e => setFMaxS(e.target.value)} />
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="f-group"><div className="f-label">Цена, ₽</div>
+                <div className="f-row">
+                  <input type="number" placeholder="от" min="0" value={fMinP} onChange={e => setFMinP(e.target.value)} />
+                  <span className="f-sep">—</span>
+                  <input type="number" placeholder="до" min="0" value={fMaxP} onChange={e => setFMaxP(e.target.value)} />
+                </div>
+              </div>
+            )}
             {curType === 'bond' && <div className="f-group"><div className="f-label">Доходность, %</div>
               <div className="f-row">
-                <input type="number" placeholder="от" step="0.1" value={fMinY} onChange={e => setFMinY(e.target.value)} />
+                <input type="number" placeholder="от" step="0.1" min="0" value={fMinY} onChange={e => setFMinY(e.target.value)} />
                 <span className="f-sep">—</span>
-                <input type="number" placeholder="до" step="0.1" value={fMaxY} onChange={e => setFMaxY(e.target.value)} />
+                <input type="number" placeholder="до" step="0.1" min="0" value={fMaxY} onChange={e => setFMaxY(e.target.value)} />
               </div>
             </div>}
             <div className="f-group" style={{ marginTop: '8px' }}>
@@ -287,26 +314,18 @@ export default function App() {
                 Показывать инструменты без цены
               </label>
             </div>
-            {curType === 'option' && <div className="f-group" style={{ marginTop: '8px' }}>
-              <div className="f-label">Тип опциона</div>
-              <select value={fOpt} onChange={e => setFOpt(e.target.value)}>
-                <option value="">Все</option>
-                <option value="C">Call</option>
-                <option value="P">Put</option>
-              </select>
-            </div>}
             {(curType === 'bond' || curType === 'option') && <button type="button" className={`adv-toggle${showAdv ? ' open' : ''}`} onClick={() => setShowAdv(v => !v)}>
               <span className="adv-arrow">▾</span> Расширенные фильтры
             </button>}
             {showAdv && <div className="adv-body">
-              {(curType === 'bond' || curType === 'futures') && <div className="f-group"><div className="f-label">Срок погашения</div>
-                <div className="f-row">
-                  <input type="date" style={{ fontSize: '11px' }} value={fD1} onChange={e => setFD1(e.target.value)} />
-                  <span className="f-sep">—</span>
-                  <input type="date" style={{ fontSize: '11px' }} value={fD2} onChange={e => setFD2(e.target.value)} />
-                </div>
+              {curType === 'option' && <div className="f-group"><div className="f-label">Тип опциона</div>
+                <select value={fOpt} onChange={e => setFOpt(e.target.value)}>
+                  <option value="">Все</option>
+                  <option value="C">Call</option>
+                  <option value="P">Put</option>
+                </select>
               </div>}
-              {curType === 'option' && <div className="f-group"><div className="f-label">Срок погашения</div>
+              {(curType === 'bond' || curType === 'futures') && <div className="f-group"><div className="f-label">Срок погашения</div>
                 <div className="f-row">
                   <input type="date" style={{ fontSize: '11px' }} value={fD1} onChange={e => setFD1(e.target.value)} />
                   <span className="f-sep">—</span>
@@ -315,9 +334,9 @@ export default function App() {
               </div>}
               {curType === 'bond' && <div className="f-group"><div className="f-label">Доходность, % (доп.)</div>
                 <div className="f-row">
-                  <input type="number" placeholder="от" step="0.1" value={fMinY} onChange={e => setFMinY(e.target.value)} />
-                  <span className="f-sep">—</span>
-                  <input type="number" placeholder="до" step="0.1" value={fMaxY} onChange={e => setFMaxY(e.target.value)} />
+                <input type="number" placeholder="от" step="0.1" min="0" value={fMinY} onChange={e => setFMinY(e.target.value)} />
+                <span className="f-sep">—</span>
+                <input type="number" placeholder="до" step="0.1" min="0" value={fMaxY} onChange={e => setFMaxY(e.target.value)} />
                 </div>
               </div>}
             </div>}
@@ -350,17 +369,16 @@ export default function App() {
               <>
                 <div className="th">Инструмент</div>
                 <div className="th">Тип</div>
-                <div className="th right">Страйк</div>
-                <div className="th">Эмитент</div>
+                <div className="th">Страйк</div>
                 <div className="th">Валюта</div>
               </>
             ) : (
               <>
                 <div className="th">Инструмент</div>
                 <div className="th">Название</div>
-                <div className="th right">Цена</div>
-                <div className="th right">Объём</div>
-                <div className="th right">Доп. инфо</div>
+                <div className="th">Цена</div>
+                <div className="th">Объём</div>
+                <div className="th">Доп. инфо</div>
               </>
             )}
           </div>
@@ -378,7 +396,7 @@ export default function App() {
               
               if (curType === 'option') {
                 return (
-                  <div className="card" key={item.ticker} onClick={() => openModal(item.ticker)} style={{ gridTemplateColumns: '200px 100px 100px 1fr 80px' }}>
+                  <div className="card" key={item.ticker} onClick={() => openModal(item.ticker)}>
                     <div className="card-ticker-col">
                       <div className="card-stripe" style={{ background: stripe }} />
                       <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
@@ -388,13 +406,10 @@ export default function App() {
                         {OPTION_TYPE_LABEL[item.option_type] || item.option_type || '—'}
                       </div>
                     </div>
-                    <div className="card-price-col">
-                      <div className="card-price">{item.strike_price ? `${Number(item.strike_price).toLocaleString('ru')} ₽` : '—'}</div>
+                    <div className="card-price-col" style={{ textAlign: 'right' }}>
+                      <div className="card-price">{item.strike_price ? `${Number(item.strike_price).toLocaleString('ru')}` : '—'}</div>
                     </div>
-                    <div className="card-vol-col">
-                      <div className="card-vol" style={{ fontSize: '11px', color: 'var(--text2)' }}>{item.issuer || '—'}</div>
-                    </div>
-                    <div className="card-extra-col">
+                    <div className="card-extra-col" style={{ textAlign: 'right' }}>
                       <div className="card-extra">{item.currency || '—'}</div>
                     </div>
                   </div>
@@ -404,7 +419,7 @@ export default function App() {
               let extra = <span className="card-extra">—</span>
               if (item.yield) extra = <span className="card-extra yield-val">{item.yield}%</span>
               else if (item.maturity_date) extra = <span className="card-extra maturity">{item.maturity_date}</span>
-              else if (item.strike_price) extra = <span className="card-extra">{Number(item.strike_price).toLocaleString('ru')} ₽</span>
+              else if (item.strike_price) extra = <span className="card-extra">{Number(item.strike_price).toLocaleString('ru')}</span>
               else if (item.option_type) extra = <span className="card-extra" style={{ color: OPTION_TYPE_COLOR[item.option_type] || '#888' }}>{OPTION_TYPE_LABEL[item.option_type] || item.option_type}</span>
               const meta = []
               if (item.issuer) meta.push(item.issuer)
@@ -420,7 +435,7 @@ export default function App() {
                     {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
                   </div>
                   <div className="card-price-col">
-                    <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{hasPrice ? fmt(item.price) + ' ₽' : 'нет данных'}</div>
+                    <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{hasPrice ? fmt(item.price) + '' : 'нет данных'}</div>
                     <div className="card-currency">{item.currency || ''}</div>
                   </div>
                   <div className="card-vol-col"><div className="card-vol">{hasPrice ? fmtVol(item.volume) : 'нет данных'}</div></div>
@@ -454,7 +469,7 @@ export default function App() {
                 <div className="modal-title">{modal.ticker}</div>
                 <div className="modal-subtitle">{modal.name || ''}</div>
                 <div className="modal-grid">
-                  <div className="modal-cell"><div className="modal-cell-label">Цена</div><div className="modal-cell-val">{modal.price ? fmt(modal.price) + ' ₽' : '—'}</div></div>
+                  <div className="modal-cell"><div className="modal-cell-label">Цена</div><div className="modal-cell-val">{modal.price ? fmt(modal.price) + '' : '—'}</div></div>
                   <div className="modal-cell"><div className="modal-cell-label">Объём</div><div className="modal-cell-val">{fmtVol(modal.volume)}</div></div>
                   <div className="modal-cell"><div className="modal-cell-label">Валюта</div><div className="modal-cell-val">{modal.currency || '—'}</div></div>
                 </div>
@@ -463,9 +478,9 @@ export default function App() {
                   {modal.sector && <div className="modal-detail-item"><div className="modal-detail-label">Сектор</div><div className="modal-detail-val">{modal.sector}</div></div>}
                   {modal.yield && <div className="modal-detail-item"><div className="modal-detail-label">Доходность</div><div className="modal-detail-val">{modal.yield}%</div></div>}
                   {modal.maturity_date && <div className="modal-detail-item"><div className="modal-detail-label">Погашение</div><div className="modal-detail-val">{modal.maturity_date}</div></div>}
-                  {modal.market_cap && <div className="modal-detail-item"><div className="modal-detail-label">Капитализация</div><div className="modal-detail-val">{fmtVol(modal.market_cap)} ₽</div></div>}
-                  {modal.market_cap && <div className="modal-detail-item"><div className="modal-detail-label">Капитализация</div><div className="modal-detail-val">{fmtVol(modal.market_cap)} ₽</div></div>}
-                  {modal.strike_price && <div className="modal-detail-item"><div className="modal-detail-label">Страйк</div><div className="modal-detail-val">{Number(modal.strike_price).toLocaleString('ru')} ₽</div></div>}
+                  {modal.market_cap && <div className="modal-detail-item"><div className="modal-detail-label">Капитализация</div><div className="modal-detail-val">{fmtVol(modal.market_cap)}</div></div>}
+                  {modal.market_cap && <div className="modal-detail-item"><div className="modal-detail-label">Капитализация</div><div className="modal-detail-val">{fmtVol(modal.market_cap)}</div></div>}
+                  {modal.strike_price && <div className="modal-detail-item"><div className="modal-detail-label">Страйк</div><div className="modal-detail-val">{Number(modal.strike_price).toLocaleString('ru')}</div></div>}
                   {modal.option_type && <div className="modal-detail-item"><div className="modal-detail-label">Тип опциона</div><div className="modal-detail-val" style={{ color: modal.option_type === 'C' ? 'var(--green2)' : '#E879F9', fontWeight: 600 }}>{OPTION_TYPE_LABEL[modal.option_type] || modal.option_type}</div></div>}
                   {modal.volatility && <div className="modal-detail-item"><div className="modal-detail-label">Волатильность</div><div className="modal-detail-val">{modal.volatility}</div></div>}
                 </div>

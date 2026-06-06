@@ -56,6 +56,12 @@ class InstrumentFilter(BaseModel):
     option_type: Optional[str] = Field(
         default=None, description="Тип опциона: C (Call) или P (Put)"
     )
+    min_strike: Optional[float] = Field(
+        default=None, ge=0, description="Минимальный страйк (>= 0)"
+    )
+    max_strike: Optional[float] = Field(
+        default=None, ge=0, description="Максимальный страйк (>= 0)"
+    )
     sort_by: str = Field(
         default="ticker", description="Поле сортировки: ticker, price, volume, name"
     )
@@ -76,7 +82,7 @@ class InstrumentFilter(BaseModel):
     @field_validator("sort_by")
     @classmethod
     def validate_sort_by(cls, v):
-        allowed = {"ticker", "price", "volume", "name", "market_cap"}
+        allowed = {"ticker", "price", "volume", "name", "market_cap", "strike_price"}
         if v not in allowed:
             raise ValueError(f"sort_by должен быть одним из: {allowed}")
         return v
