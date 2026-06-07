@@ -644,7 +644,7 @@ select option {
 
 .card {
   display: grid;
-  grid-template-columns: 200px 1fr 90px 90px 100px;
+  grid-template-columns: 200px 1fr 90px 90px;
   gap: 0;
   padding: 10px 14px;
   border: 1px solid var(--border);
@@ -657,6 +657,43 @@ select option {
 
 .card:last-child {
   border-radius: 0 0 4px 4px;
+}
+
+.card-option {
+  grid-template-columns: 200px 1fr 70px 80px 50px;
+}
+
+.card-bond-only {
+  grid-template-columns: 200px 1fr 90px 90px 100px;
+}
+
+.card-stock-only {
+  grid-template-columns: 200px 1fr 90px 90px 100px;
+}
+
+.card-all {
+  grid-template-columns: 200px 1fr 1fr;
+}
+
+.card-all .card-extra-col {
+  padding: 0 4px;
+  font-size: 11px;
+  color: var(--text2);
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.card-all .card-extra-col .card-extra {
+  text-align: right;
+  width: 100%;
+}
+
+.card-type-col {
+  padding: 0 4px;
+  font-size: 11px;
+  color: var(--text2);
 }
 
 .card:hover {
@@ -1077,9 +1114,13 @@ select option {
 
 .theme-toggle:hover {
   background: var(--accent);
-  color: #fff;
+  color: var(--bg);
   border-color: var(--accent);
   transform: scale(1.1);
+}
+
+.theme-toggle:hover svg {
+  stroke: var(--bg);
 }
 
 @media (max-width: 960px) {

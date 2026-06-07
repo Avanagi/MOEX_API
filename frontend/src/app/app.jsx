@@ -22,7 +22,11 @@ const ALL_SORTS = [
   { sort: 'price', order: 'desc', label: 'Цена ↓' },
   { sort: 'price', order: 'asc', label: 'Цена ↑' },
   { sort: 'volume', order: 'desc', label: 'Объём ↓' },
+  { sort: 'volume', order: 'asc', label: 'Объём ↑' },
   { sort: 'market_cap', order: 'desc', label: 'Капитализация ↓' },
+  { sort: 'market_cap', order: 'asc', label: 'Капитализация ↑' },
+  { sort: 'yield', order: 'desc', label: 'Доходность ↓' },
+  { sort: 'yield', order: 'asc', label: 'Доходность ↑' },
   { sort: 'strike_price', order: 'desc', label: 'Страйк ↓' },
   { sort: 'strike_price', order: 'asc', label: 'Страйк ↑' },
 ]
@@ -73,6 +77,8 @@ export default function App() {
   const [fMaxY, setFMaxY] = useState('')
   const [fD1, setFD1] = useState('')
   const [fD2, setFD2] = useState('')
+  const [fMinV, setFMinV] = useState('')
+  const [fMaxV, setFMaxV] = useState('')
   const [fOpt, setFOpt] = useState('')
   const [showNullPrice, setShowNullPrice] = useState(true)
   const [showNullPriceFilter, setShowNullPriceFilter] = useState(true)
@@ -80,7 +86,13 @@ export default function App() {
   const toastTimer = useRef(null)
   const SORTS = curType === 'option'
     ? ALL_SORTS.filter(s => s.sort === 'ticker' || s.sort === 'strike_price')
-    : ALL_SORTS.filter(s => s.sort !== 'strike_price')
+    : curType === 'stock'
+    ? ALL_SORTS.filter(s => ['ticker', 'price', 'volume', 'market_cap'].includes(s.sort))
+    : curType === 'bond'
+    ? ALL_SORTS.filter(s => ['ticker', 'price', 'volume', 'yield'].includes(s.sort))
+    : curType === 'futures'
+    ? ALL_SORTS.filter(s => ['ticker', 'price', 'volume'].includes(s.sort))
+    : ALL_SORTS
   const curSort = SORTS[sortKey].sort
   const curOrder = SORTS[sortKey].order
 
@@ -126,40 +138,54 @@ export default function App() {
         const p = new URLSearchParams()
         if (curType) p.set('type', curType)
         if (curType === 'option') {
-          if (fMinS) p.set('min_strike', fMinS)
-          if (fMaxS) p.set('max_strike', fMaxS)
+          // strike filters applied unconditionally below
+        } else if (curType === 'futures') {
+          if (fMinP) p.set('min_price', fMinP)
+          if (fMaxP) p.set('max_price', fMaxP)
+          if (fMinV) p.set('min_volume', fMinV)
+          if (fMaxV) p.set('max_volume', fMaxV)
         } else {
           if (fMinP) p.set('min_price', fMinP)
           if (fMaxP) p.set('max_price', fMaxP)
         }
-        if (fMinY) p.set('min_yield', fMinY)
-        if (fMaxY) p.set('max_yield', fMaxY)
+        if (curType !== 'option' && fMinY) p.set('min_yield', fMinY)
+        if (curType !== 'option' && fMaxY) p.set('max_yield', fMaxY)
         if (fD1) p.set('maturity_from', fD1)
         if (fD2) p.set('maturity_to', fD2)
-        p.set('show_null_price', showNullPriceFilter ? '1' : '0')
-        if (fOpt) p.set('option_type', fOpt)
+        if (curType !== 'option') p.set('show_null_price', showNullPriceFilter ? '1' : '0')
+        if (curType === 'option' && fOpt) p.set('option_type', fOpt)
+        if (curType === 'option' && fMinS) p.set('min_strike', fMinS)
+        if (curType === 'option' && fMaxS) p.set('max_strike', fMaxS)
+        if (curType === 'futures' && fMinV) p.set('min_volume', fMinV)
+        if (curType === 'futures' && fMaxV) p.set('max_volume', fMaxV)
         p.set('sort_by', curSort)
         p.set('order', curOrder)
         p.set('limit', String(perPage))
         p.set('offset', String(curPage * perPage))
         const r = await fetch(`${API}/instruments?${p}`)
         data = await r.json()
-        // Получаем общее количество из отдельного эндпоинта
         const countP = new URLSearchParams()
         if (curType) countP.set('type', curType)
         if (curType === 'option') {
-          if (fMinS) countP.set('min_strike', fMinS)
-          if (fMaxS) countP.set('max_strike', fMaxS)
+          // strike filters applied unconditionally below
+        } else if (curType === 'futures') {
+          if (fMinP) countP.set('min_price', fMinP)
+          if (fMaxP) countP.set('max_price', fMaxP)
+          // volume filters applied unconditionally below
         } else {
           if (fMinP) countP.set('min_price', fMinP)
           if (fMaxP) countP.set('max_price', fMaxP)
         }
-        if (fMinY) countP.set('min_yield', fMinY)
-        if (fMaxY) countP.set('max_yield', fMaxY)
+        if (curType !== 'option' && fMinY) countP.set('min_yield', fMinY)
+        if (curType !== 'option' && fMaxY) countP.set('max_yield', fMaxY)
         if (fD1) countP.set('maturity_from', fD1)
         if (fD2) countP.set('maturity_to', fD2)
-        countP.set('show_null_price', showNullPriceFilter ? '1' : '0')
-        if (fOpt) countP.set('option_type', fOpt)
+        if (curType !== 'option') countP.set('show_null_price', showNullPriceFilter ? '1' : '0')
+        if (curType === 'option' && fOpt) countP.set('option_type', fOpt)
+        if (curType === 'option' && fMinS) countP.set('min_strike', fMinS)
+        if (curType === 'option' && fMaxS) countP.set('max_strike', fMaxS)
+        if (curType === 'futures' && fMinV) countP.set('min_volume', fMinV)
+        if (curType === 'futures' && fMaxV) countP.set('max_volume', fMaxV)
         const countR = await fetch(`${API}/instruments/count/full?${countP}`)
         const countData = await countR.json()
         tot = countData.total
@@ -173,7 +199,7 @@ export default function App() {
     } finally {
       setLoading(false)
     }
-  }, [search, curType, curSort, curOrder, curPage, perPage, fMinS, fMaxS, fMinY, fMaxY, fD1, fD2, showNullPriceFilter, fOpt])
+  }, [search, curType, curSort, curOrder, curPage, perPage, fMinS, fMaxS, fMinP, fMaxP, fMinV, fMaxV, fMinY, fMaxY, fD1, fD2, showNullPriceFilter, fOpt])
 
   useEffect(() => {
     loadStats()
@@ -197,11 +223,18 @@ export default function App() {
     searchTimer.current = setTimeout(() => setCurPage(0), 350)
   }
 
-  function selectType(id) { setCurType(id); setCurPage(0) }
+  function selectType(id) {
+    setCurType(id); setCurPage(0)
+    if (id === 'bond') { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxV(''); setFSector('') }
+    else if (id === 'stock') { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxY(''); setFMinY(''); setFSector(''); setFOpt('') }
+    else if (id === 'futures') { setFMinS(''); setFMaxS(''); setFMinY(''); setFMaxY(''); setFSector(''); setFOpt('') }
+    else if (id === 'option') { setFMinP(''); setFMaxP(''); setFMinV(''); setFMaxY(''); setFMinY(''); setFSector('') }
+    else { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxY(''); setFMinY(''); setFSector(''); setFOpt('') }
+  }
   function selectSort(idx) { setSortKey(idx); setCurPage(0) }
   function applyFilters() { setCurPage(0) }
   function resetFilters() {
-    setSearch(''); setFMinP(''); setFMaxP(''); setFMinS(''); setFMaxS(''); setFMinY(''); setFMaxY('')
+    setSearch(''); setFMinP(''); setFMaxP(''); setFMinS(''); setFMaxS(''); setFMinY(''); setFMaxY(''); setFMinV(''); setFMaxV('')
     setFD1(''); setFD2(''); setFOpt('')
     setShowNullPriceFilter(true)
     setCurType(''); setCurPage(0); setSortKey(0)
@@ -280,7 +313,7 @@ export default function App() {
           <div className="s-section">
             <div className="s-label">Основные фильтры</div>
             {curType === 'option' ? (
-              <div className="f-group"><div className="f-label">Страйк, ₽</div>
+              <div className="f-group"><div className="f-label">Страйк</div>
                 <div className="f-row">
                   <input type="number" placeholder="от" min="0" value={fMinS} onChange={e => setFMinS(e.target.value)} />
                   <span className="f-sep">—</span>
@@ -288,7 +321,7 @@ export default function App() {
                 </div>
               </div>
             ) : (
-              <div className="f-group"><div className="f-label">Цена, ₽</div>
+              <div className="f-group"><div className="f-label">Цена</div>
                 <div className="f-row">
                   <input type="number" placeholder="от" min="0" value={fMinP} onChange={e => setFMinP(e.target.value)} />
                   <span className="f-sep">—</span>
@@ -296,15 +329,8 @@ export default function App() {
                 </div>
               </div>
             )}
-            {curType === 'bond' && <div className="f-group"><div className="f-label">Доходность, %</div>
-              <div className="f-row">
-                <input type="number" placeholder="от" step="0.1" min="0" value={fMinY} onChange={e => setFMinY(e.target.value)} />
-                <span className="f-sep">—</span>
-                <input type="number" placeholder="до" step="0.1" min="0" value={fMaxY} onChange={e => setFMaxY(e.target.value)} />
-              </div>
-            </div>}
             <div className="f-group" style={{ marginTop: '8px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '11px', color: 'var(--text2)' }}>
+              {curType !== 'option' && <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '11px', color: 'var(--text2)' }}>
                 <input
                   type="checkbox"
                   checked={showNullPriceFilter}
@@ -312,9 +338,15 @@ export default function App() {
                   style={{ width: 'auto', accentColor: 'var(--accent)' }}
                 />
                 Показывать инструменты без цены
-              </label>
+              </label>}
             </div>
-            {(curType === 'bond' || curType === 'option') && <button type="button" className={`adv-toggle${showAdv ? ' open' : ''}`} onClick={() => setShowAdv(v => !v)}>
+            {curType === 'bond' && <button type="button" className={`adv-toggle${showAdv ? ' open' : ''}`} onClick={() => setShowAdv(v => !v)}>
+              <span className="adv-arrow">▾</span> Расширенные фильтры
+            </button>}
+            {curType === 'futures' && <button type="button" className={`adv-toggle${showAdv ? ' open' : ''}`} onClick={() => setShowAdv(v => !v)}>
+              <span className="adv-arrow">▾</span> Расширенные фильтры
+            </button>}
+            {curType === 'option' && <button type="button" className={`adv-toggle${showAdv ? ' open' : ''}`} onClick={() => setShowAdv(v => !v)}>
               <span className="adv-arrow">▾</span> Расширенные фильтры
             </button>}
             {showAdv && <div className="adv-body">
@@ -325,7 +357,7 @@ export default function App() {
                   <option value="P">Put</option>
                 </select>
               </div>}
-              {(curType === 'bond' || curType === 'futures') && <div className="f-group"><div className="f-label">Срок погашения</div>
+              {curType === 'bond' && <div className="f-group"><div className="f-label">Срок погашения</div>
                 <div className="f-row">
                   <input type="date" style={{ fontSize: '11px' }} value={fD1} onChange={e => setFD1(e.target.value)} />
                   <span className="f-sep">—</span>
@@ -337,6 +369,13 @@ export default function App() {
                 <input type="number" placeholder="от" step="0.1" min="0" value={fMinY} onChange={e => setFMinY(e.target.value)} />
                 <span className="f-sep">—</span>
                 <input type="number" placeholder="до" step="0.1" min="0" value={fMaxY} onChange={e => setFMaxY(e.target.value)} />
+                </div>
+              </div>}
+              {curType === 'futures' && <div className="f-group"><div className="f-label">Объём</div>
+                <div className="f-row">
+                  <input type="number" placeholder="от" min="0" value={fMinV} onChange={e => setFMinV(e.target.value)} />
+                  <span className="f-sep">—</span>
+                  <input type="number" placeholder="до" min="0" value={fMaxV} onChange={e => setFMaxV(e.target.value)} />
                 </div>
               </div>}
             </div>}
@@ -364,7 +403,7 @@ export default function App() {
               </select>
             </div>
           </div>
-          <div className="table-header">
+          <div className="table-header" style={{ gridTemplateColumns: curType === 'option' ? '200px 1fr 90px 90px' : curType === 'bond' ? '200px 1fr 90px 90px 100px' : curType === 'stock' ? '200px 1fr 90px 90px 100px' : curType === 'futures' ? '200px 1fr 90px 90px' : '200px 1fr 1fr' }}>
             {curType === 'option' ? (
               <>
                 <div className="th">Инструмент</div>
@@ -372,13 +411,34 @@ export default function App() {
                 <div className="th">Страйк</div>
                 <div className="th">Валюта</div>
               </>
+            ) : curType === 'bond' ? (
+              <>
+                <div className="th">Инструмент</div>
+                <div className="th">Название</div>
+                <div className="th right">Цена</div>
+                <div className="th right">Объём</div>
+                <div className="th right">Доходность</div>
+              </>
+            ) : curType === 'stock' ? (
+              <>
+                <div className="th">Инструмент</div>
+                <div className="th">Название</div>
+                <div className="th right">Цена</div>
+                <div className="th right">Объём</div>
+                <div className="th right">Капитализация</div>
+              </>
+            ) : curType === 'futures' ? (
+              <>
+                <div className="th">Инструмент</div>
+                <div className="th">Название</div>
+                <div className="th right">Цена</div>
+                <div className="th right">Объём</div>
+              </>
             ) : (
               <>
                 <div className="th">Инструмент</div>
                 <div className="th">Название</div>
-                <div className="th">Цена</div>
-                <div className="th">Объём</div>
-                <div className="th">Доп. инфо</div>
+                <div className="th right">Доп. инфо</div>
               </>
             )}
           </div>
@@ -396,7 +456,7 @@ export default function App() {
               
               if (curType === 'option') {
                 return (
-                  <div className="card" key={item.ticker} onClick={() => openModal(item.ticker)}>
+                  <div className="card card-option" key={item.ticker} onClick={() => openModal(item.ticker)}>
                     <div className="card-ticker-col">
                       <div className="card-stripe" style={{ background: stripe }} />
                       <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
@@ -406,26 +466,167 @@ export default function App() {
                         {OPTION_TYPE_LABEL[item.option_type] || item.option_type || '—'}
                       </div>
                     </div>
-                    <div className="card-price-col" style={{ textAlign: 'right' }}>
+                    <div className="card-price-col" style={{ textAlign: 'right', paddingLeft: '4px' }}>
                       <div className="card-price">{item.strike_price ? `${Number(item.strike_price).toLocaleString('ru')}` : '—'}</div>
                     </div>
-                    <div className="card-extra-col" style={{ textAlign: 'right' }}>
+                    <div className="card-extra-col" style={{ textAlign: 'right', paddingRight: '4px' }}>
                       <div className="card-extra">{item.currency || '—'}</div>
                     </div>
                   </div>
                 )
               }
               
-              let extra = <span className="card-extra">—</span>
-              if (item.yield) extra = <span className="card-extra yield-val">{item.yield}%</span>
-              else if (item.maturity_date) extra = <span className="card-extra maturity">{item.maturity_date}</span>
-              else if (item.strike_price) extra = <span className="card-extra">{Number(item.strike_price).toLocaleString('ru')}</span>
-              else if (item.option_type) extra = <span className="card-extra" style={{ color: OPTION_TYPE_COLOR[item.option_type] || '#888' }}>{OPTION_TYPE_LABEL[item.option_type] || item.option_type}</span>
               const meta = []
               if (item.issuer) meta.push(item.issuer)
               if (item.sector) meta.push(item.sector)
-              return (
-                <div className={`card${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
+              
+              if (curType === 'bond') {
+                const yieldColor = item.yield && item.yield > 0 ? 'var(--green2)' : (item.yield && item.yield < 0 ? '#EF4444' : 'var(--text2)')
+                const yieldDisplay = item.yield != null ? `${item.yield}%` : '—'
+                return (
+                  <div className={`card${!hasPrice ? ' no-price' : ''} card-bond-only`} key={item.ticker} onClick={() => openModal(item.ticker)}>
+                    <div className="card-ticker-col">
+                      <div className="card-stripe" style={{ background: stripe }} />
+                      <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                    </div>
+                    <div className="card-name-col">
+                      <div className="card-name">{item.name || '—'}</div>
+                      {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
+                    </div>
+                    <div className="card-price-col">
+                      <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{hasPrice ? fmt(item.price) + '' : 'нет данных'}</div>
+                      <div className="card-currency">{item.currency || ''}</div>
+                    </div>
+                    <div className="card-vol-col"><div className="card-vol">{hasPrice ? fmtVol(item.volume) : 'нет данных'}</div></div>
+                    <div className="card-extra-col"><div className="card-extra yield-val" style={{ color: yieldColor }}>{yieldDisplay}</div></div>
+                  </div>
+                )
+              }
+              
+              if (curType === 'stock') {
+                return (
+                  <div className={`card${!hasPrice ? ' no-price' : ''} card-stock-only`} key={item.ticker} onClick={() => openModal(item.ticker)}>
+                    <div className="card-ticker-col">
+                      <div className="card-stripe" style={{ background: stripe }} />
+                      <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                    </div>
+                    <div className="card-name-col">
+                      <div className="card-name">{item.name || '—'}</div>
+                      {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
+                    </div>
+                    <div className="card-price-col">
+                      <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{hasPrice ? fmt(item.price) + '' : 'нет данных'}</div>
+                      <div className="card-currency">{item.currency || ''}</div>
+                    </div>
+                    <div className="card-vol-col"><div className="card-vol">{hasPrice ? fmtVol(item.volume) : 'нет данных'}</div></div>
+                    <div className="card-extra-col"><div className="card-extra">{item.market_cap ? fmtVol(item.market_cap) : '—'}</div></div>
+                  </div>
+                )
+              }
+              
+              if (curType === 'futures') {
+                return (
+                  <div className={`card${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
+                    <div className="card-ticker-col">
+                      <div className="card-stripe" style={{ background: stripe }} />
+                      <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                    </div>
+                    <div className="card-name-col">
+                      <div className="card-name">{item.name || '—'}</div>
+                      {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
+                    </div>
+                    <div className="card-price-col">
+                      <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{hasPrice ? fmt(item.price) + '' : 'нет данных'}</div>
+                      <div className="card-currency">{item.currency || ''}</div>
+                    </div>
+                    <div className="card-vol-col"><div className="card-vol">{hasPrice ? fmtVol(item.volume) : 'нет данных'}</div></div>
+                  </div>
+                )
+              }
+              
+              if (curType === '') {
+                if (type === 'bond') {
+                  const yieldColor = item.yield && item.yield > 0 ? 'var(--green2)' : (item.yield && item.yield < 0 ? '#EF4444' : 'var(--text2)')
+                  const yieldDisplay = item.yield != null ? `${item.yield}%` : '—'
+                  return (
+                    <div className={`card card-all${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
+                      <div className="card-ticker-col">
+                        <div className="card-stripe" style={{ background: stripe }} />
+                        <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                      </div>
+                      <div className="card-name-col">
+                        <div className="card-name">{item.name || '—'}</div>
+                        {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
+                      </div>
+                      <div className="card-extra-col"><div className="card-extra yield-val" style={{ color: yieldColor }}>{yieldDisplay}</div></div>
+                    </div>
+                  )
+                }
+                if (type === 'stock') {
+                  return (
+                    <div className={`card card-all${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
+                      <div className="card-ticker-col">
+                        <div className="card-stripe" style={{ background: stripe }} />
+                        <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                      </div>
+                      <div className="card-name-col">
+                        <div className="card-name">{item.name || '—'}</div>
+                        {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
+                      </div>
+                      <div className="card-extra-col"><div className="card-extra">{item.market_cap ? fmtVol(item.market_cap) : '—'}</div></div>
+                    </div>
+                  )
+                }
+                if (type === 'option') {
+                  return (
+                    <div className="card card-all" key={item.ticker} onClick={() => openModal(item.ticker)}>
+                      <div className="card-ticker-col">
+                        <div className="card-stripe" style={{ background: stripe }} />
+                        <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                      </div>
+                      <div className="card-name-col">
+                        <div className="card-name">{item.name || '—'}</div>
+                      </div>
+                      <div className="card-extra-col" style={{ textAlign: 'right' }}>
+                        <div className="card-extra">{item.strike_price ? `${Number(item.strike_price).toLocaleString('ru')}` : '—'}</div>
+                      </div>
+                    </div>
+                  )
+                }
+                if (type === 'futures') {
+                  return (
+                    <div className={`card card-all${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
+                      <div className="card-ticker-col">
+                        <div className="card-stripe" style={{ background: stripe }} />
+                        <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                      </div>
+                      <div className="card-name-col">
+                        <div className="card-name">{item.name || '—'}</div>
+                        {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
+                      </div>
+                      <div className="card-extra-col" style={{ textAlign: 'right' }}>
+                        <div className="card-extra">{hasPrice ? fmt(item.price) + '' : 'нет данных'}</div>
+                      </div>
+                    </div>
+                  )
+                }
+                return (
+                  <div className={`card${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
+                    <div className="card-ticker-col">
+                      <div className="card-stripe" style={{ background: stripe }} />
+                      <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                    </div>
+                    <div className="card-name-col">
+                      <div className="card-name">{item.name || '—'}</div>
+                      {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
+                    </div>
+                    <div className="card-extra-col"><div className="card-extra">—</div></div>
+                  </div>
+                )
+              }
+              
+                return (
+                  <div className={`card card-all${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
                   <div className="card-ticker-col">
                     <div className="card-stripe" style={{ background: stripe }} />
                     <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
@@ -439,7 +640,6 @@ export default function App() {
                     <div className="card-currency">{item.currency || ''}</div>
                   </div>
                   <div className="card-vol-col"><div className="card-vol">{hasPrice ? fmtVol(item.volume) : 'нет данных'}</div></div>
-                  <div className="card-extra-col">{extra}</div>
                 </div>
               )
             })}
@@ -456,7 +656,6 @@ export default function App() {
             <div className={`pg${curPage >= pages - 1 ? ' disabled' : ''}`} onClick={() => curPage < pages - 1 && goPage(curPage + 1)} title="Следующая">›</div>
             <div className={`pg${curPage >= pages - 1 ? ' disabled' : ''}`} onClick={() => curPage < pages - 1 && goPage(pages - 1)} title="Последняя">»</div>
           </div>}
-          {instruments.length > 0 && <div className="pagination-info">Страница <b>{curPage + 1}</b> из <b>{Math.max(pages, 1)}</b></div>}
         </main>
       </div>
       {modal && <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) closeModal() }}>
@@ -478,7 +677,6 @@ export default function App() {
                   {modal.sector && <div className="modal-detail-item"><div className="modal-detail-label">Сектор</div><div className="modal-detail-val">{modal.sector}</div></div>}
                   {modal.yield && <div className="modal-detail-item"><div className="modal-detail-label">Доходность</div><div className="modal-detail-val">{modal.yield}%</div></div>}
                   {modal.maturity_date && <div className="modal-detail-item"><div className="modal-detail-label">Погашение</div><div className="modal-detail-val">{modal.maturity_date}</div></div>}
-                  {modal.market_cap && <div className="modal-detail-item"><div className="modal-detail-label">Капитализация</div><div className="modal-detail-val">{fmtVol(modal.market_cap)}</div></div>}
                   {modal.market_cap && <div className="modal-detail-item"><div className="modal-detail-label">Капитализация</div><div className="modal-detail-val">{fmtVol(modal.market_cap)}</div></div>}
                   {modal.strike_price && <div className="modal-detail-item"><div className="modal-detail-label">Страйк</div><div className="modal-detail-val">{Number(modal.strike_price).toLocaleString('ru')}</div></div>}
                   {modal.option_type && <div className="modal-detail-item"><div className="modal-detail-label">Тип опциона</div><div className="modal-detail-val" style={{ color: modal.option_type === 'C' ? 'var(--green2)' : '#E879F9', fontWeight: 600 }}>{OPTION_TYPE_LABEL[modal.option_type] || modal.option_type}</div></div>}

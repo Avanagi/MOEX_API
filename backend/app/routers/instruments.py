@@ -121,6 +121,14 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
         query += " AND strike_price <= %s"
         params.append(filters.max_strike)
 
+    if filters.min_volume is not None:
+        query += " AND volume >= %s"
+        params.append(filters.min_volume)
+
+    if filters.max_volume is not None:
+        query += " AND volume <= %s"
+        params.append(filters.max_volume)
+
     # Фильтр инструментов без цены
     if not filters.show_null_price:
         query += " AND price IS NOT NULL"
@@ -162,6 +170,12 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
     if filters.max_strike is not None:
         count_query += " AND strike_price <= %s"
         count_params.append(filters.max_strike)
+    if filters.min_volume is not None:
+        count_query += " AND volume >= %s"
+        count_params.append(filters.min_volume)
+    if filters.max_volume is not None:
+        count_query += " AND volume <= %s"
+        count_params.append(filters.max_volume)
     
     cursor.execute(count_query, count_params)
     total = cursor.fetchone()[0]
@@ -205,7 +219,7 @@ async def search_instruments(
         query += " AND type = %s"
         params.append(type)
 
-    if sort_by and sort_by in {"ticker", "price", "volume", "name", "market_cap", "strike_price"}:
+    if sort_by and sort_by in {"ticker", "price", "volume", "name", "market_cap", "strike_price", "yield"}:
         sort_order = "DESC" if order == "desc" else "ASC"
         query += f" ORDER BY CASE WHEN price IS NULL THEN 1 ELSE 0 END, {sort_by} {sort_order}"
     else:
@@ -294,6 +308,12 @@ async def get_count_full(filters: InstrumentFilter = Depends()):
     if filters.max_strike is not None:
         query += " AND strike_price <= %s"
         params.append(filters.max_strike)
+    if filters.min_volume is not None:
+        query += " AND volume >= %s"
+        params.append(filters.min_volume)
+    if filters.max_volume is not None:
+        query += " AND volume <= %s"
+        params.append(filters.max_volume)
     
     # Фильтр инструментов без цены
     if not filters.show_null_price:

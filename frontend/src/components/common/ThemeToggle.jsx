@@ -4,7 +4,6 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState('light')
 
   useEffect(() => {
-    // Проверяем localStorage или системную тему
     const saved = localStorage.getItem('moex-theme')
     if (saved) {
       setTheme(saved)
