@@ -227,11 +227,9 @@ export default function App() {
 
   function selectType(id) {
     setCurType(id); setCurPage(0)
-    if (id === 'bond') { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxV('') }
-    else if (id === 'stock') { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxY(''); setFMinY(''); setFOpt('') }
-    else if (id === 'futures') { setFMinS(''); setFMaxS(''); setFMinY(''); setFMaxY(''); setFOpt('') }
-    else if (id === 'option') { setFMinP(''); setFMaxP(''); setFMinV(''); setFMaxY(''); setFMinY('') }
-    else { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxY(''); setFMinY(''); setFOpt('') }
+    setFMinP(''); setFMaxP(''); setFMinS(''); setFMaxS(''); setFMinY(''); setFMaxY(''); setFMinV(''); setFMaxV('')
+    setFD1(''); setFD2(''); setFOpt('')
+    setShowAdv(false)
   }
   function selectSort(idx) { setSortKey(idx); setCurPage(0) }
   function applyFilters() { setCurPage(0) }
@@ -393,71 +391,82 @@ export default function App() {
               </select>
             </div>
           </div>
-          <div className="table-header" style={{ gridTemplateColumns: curType === 'option' ? '200px 1fr 90px 90px' : curType === 'bond' ? '200px 1fr 90px 90px 100px' : curType === 'stock' ? '200px 1fr 90px 90px 100px' : curType === 'futures' ? '200px 1fr 90px 90px' : '200px 1fr 1fr' }}>
-            {curType === 'option' ? (
-              <>
-                <div className="th">Инструмент</div>
-                <div className="th">Тип</div>
-                <div className="th">Страйк</div>
-                <div className="th">Валюта</div>
-              </>
-            ) : curType === 'bond' ? (
-              <>
-                <div className="th">Инструмент</div>
-                <div className="th">Название</div>
-                <div className="th right">Цена</div>
-                <div className="th right">Объём</div>
-                <div className="th right">Доходность</div>
-              </>
-            ) : curType === 'stock' ? (
-              <>
-                <div className="th">Инструмент</div>
-                <div className="th">Название</div>
-                <div className="th right">Цена</div>
-                <div className="th right">Объём</div>
-                <div className="th right">Капитализация</div>
-              </>
-            ) : curType === 'futures' ? (
-              <>
-                <div className="th">Инструмент</div>
-                <div className="th">Название</div>
-                <div className="th right">Цена</div>
-                <div className="th right">Объём</div>
-              </>
-            ) : (
-              <>
-                <div className="th">Инструмент</div>
-                <div className="th">Название</div>
-                <div className="th right">Доп. инфо</div>
-              </>
-            )}
+          <div className="table-scroll">
+            <div className="table-header" style={{ gridTemplateColumns: curType === 'option' ? '200px 1fr 90px 90px' : curType === 'bond' ? '200px 1fr 90px 90px 100px' : curType === 'stock' ? '200px 1fr 90px 90px 100px' : curType === 'futures' ? '200px 1fr 90px 90px' : '200px 1fr 1fr' }}>
+              {curType === 'option' ? (
+                <>
+                  <div className="th">Инструмент</div>
+                  <div className="th">Тип</div>
+                  <div className="th">Страйк</div>
+                  <div className="th">Валюта</div>
+                </>
+              ) : curType === 'bond' ? (
+                <>
+                  <div className="th">Инструмент</div>
+                  <div className="th">Название</div>
+                  <div className="th right">Цена</div>
+                  <div className="th right">Объём</div>
+                  <div className="th right">Доходность</div>
+                </>
+              ) : curType === 'stock' ? (
+                <>
+                  <div className="th">Инструмент</div>
+                  <div className="th">Название</div>
+                  <div className="th right">Цена</div>
+                  <div className="th right">Объём</div>
+                  <div className="th right">Капитализация</div>
+                </>
+              ) : curType === 'futures' ? (
+                <>
+                  <div className="th">Инструмент</div>
+                  <div className="th">Название</div>
+                  <div className="th right">Цена</div>
+                  <div className="th right">Объём</div>
+                </>
+              ) : (
+                <>
+                  <div className="th">Инструмент</div>
+                  <div className="th">Название</div>
+                  <div className="th right">Доп. инфо</div>
+                </>
+              )}
+            </div>
           </div>
           <div className="cards">
             {loading && Array.from({ length: 6 }).map((_, i) => <div className="skel" key={i} />)}
             {!loading && instruments.length === 0 && <div className="empty-msg">
               {total === 0
-                ? 'Инструменты не найдены. Проверьте подключение к API или запустите коллектор данных.'
+                ? 'Инструменты не найдены.'
                 : 'Ничего не найдено. Измените фильтры.'}
             </div>}
             {!loading && instruments.map(item => {
               const type = item.type || ''
               const hasPrice = item.price > 0
               const stripe = STRIPE_COLOR[type] || '#555'
+              const meta = []
+              if (item.issuer) meta.push(item.issuer)
+              if (item.sector) meta.push(item.sector)
+              const yieldColor = item.yield && item.yield > 0 ? 'var(--green2)' : (item.yield && item.yield < 0 ? '#EF4444' : 'var(--text2)')
+              const yieldDisplay = item.yield != null ? `${item.yield}%` : '—'
+              const marketCapDisplay = item.market_cap ? fmtVol(item.market_cap) : '—'
+              const priceDisplay = hasPrice ? fmt(item.price) : 'нет данных'
+              const volDisplay = hasPrice ? fmtVol(item.volume) : 'нет данных'
+              const strikeDisplay = item.strike_price ? `${Number(item.strike_price).toLocaleString('ru')}` : '—'
+              const optionLabel = OPTION_TYPE_LABEL[item.option_type] || item.option_type || '—'
+              const optionColor = OPTION_TYPE_COLOR[item.option_type] || 'var(--text2)'
               
               if (curType === 'option') {
                 return (
                   <div className="card card-option" key={item.ticker} onClick={() => openModal(item.ticker)}>
                     <div className="card-ticker-col">
                       <div className="card-stripe" style={{ background: stripe }} />
-                      <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                      <div><span className="card-ticker">{item.ticker}{curType === '' && <span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span>}</span></div>
                     </div>
                     <div className="card-name-col">
-                      <div className="card-name" style={{ color: OPTION_TYPE_COLOR[item.option_type] || 'var(--text2)', fontWeight: 600 }}>
-                        {OPTION_TYPE_LABEL[item.option_type] || item.option_type || '—'}
-                      </div>
+                      <div className="card-name" style={{ color: optionColor, fontWeight: 600 }}>{optionLabel}</div>
                     </div>
                     <div className="card-price-col" style={{ textAlign: 'right', paddingLeft: '4px' }}>
-                      <div className="card-price">{item.strike_price ? `${Number(item.strike_price).toLocaleString('ru')}` : '—'}</div>
+                      <div className="card-price">{strikeDisplay}</div>
                     </div>
                     <div className="card-extra-col" style={{ textAlign: 'right', paddingRight: '4px' }}>
                       <div className="card-extra">{item.currency || '—'}</div>
@@ -466,28 +475,22 @@ export default function App() {
                 )
               }
               
-              const meta = []
-              if (item.issuer) meta.push(item.issuer)
-              if (item.sector) meta.push(item.sector)
-              
               if (curType === 'bond') {
-                const yieldColor = item.yield && item.yield > 0 ? 'var(--green2)' : (item.yield && item.yield < 0 ? '#EF4444' : 'var(--text2)')
-                const yieldDisplay = item.yield != null ? `${item.yield}%` : '—'
                 return (
                   <div className={`card${!hasPrice ? ' no-price' : ''} card-bond-only`} key={item.ticker} onClick={() => openModal(item.ticker)}>
                     <div className="card-ticker-col">
                       <div className="card-stripe" style={{ background: stripe }} />
-                      <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                      <div><span className="card-ticker">{item.ticker}{curType === '' && <span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span>}</span></div>
                     </div>
                     <div className="card-name-col">
                       <div className="card-name">{item.name || '—'}</div>
                       {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
                     </div>
                     <div className="card-price-col">
-                      <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{hasPrice ? fmt(item.price) + '' : 'нет данных'}</div>
+                      <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{priceDisplay}</div>
                       <div className="card-currency">{item.currency || ''}</div>
                     </div>
-                    <div className="card-vol-col"><div className="card-vol">{hasPrice ? fmtVol(item.volume) : 'нет данных'}</div></div>
+                    <div className="card-vol-col"><div className="card-vol">{volDisplay}</div></div>
                     <div className="card-extra-col"><div className="card-extra yield-val" style={{ color: yieldColor }}>{yieldDisplay}</div></div>
                   </div>
                 )
@@ -498,18 +501,18 @@ export default function App() {
                   <div className={`card${!hasPrice ? ' no-price' : ''} card-stock-only`} key={item.ticker} onClick={() => openModal(item.ticker)}>
                     <div className="card-ticker-col">
                       <div className="card-stripe" style={{ background: stripe }} />
-                      <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                      <div><span className="card-ticker">{item.ticker}{curType === '' && <span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span>}</span></div>
                     </div>
                     <div className="card-name-col">
                       <div className="card-name">{item.name || '—'}</div>
                       {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
                     </div>
                     <div className="card-price-col">
-                      <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{hasPrice ? fmt(item.price) + '' : 'нет данных'}</div>
+                      <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{priceDisplay}</div>
                       <div className="card-currency">{item.currency || ''}</div>
                     </div>
-                    <div className="card-vol-col"><div className="card-vol">{hasPrice ? fmtVol(item.volume) : 'нет данных'}</div></div>
-                    <div className="card-extra-col"><div className="card-extra">{item.market_cap ? fmtVol(item.market_cap) : '—'}</div></div>
+                    <div className="card-vol-col"><div className="card-vol">{volDisplay}</div></div>
+                    <div className="card-extra-col"><div className="card-extra">{marketCapDisplay}</div></div>
                   </div>
                 )
               }
@@ -519,36 +522,34 @@ export default function App() {
                   <div className={`card${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
                     <div className="card-ticker-col">
                       <div className="card-stripe" style={{ background: stripe }} />
-                      <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                      <div><span className="card-ticker">{item.ticker}{curType === '' && <span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span>}</span></div>
                     </div>
                     <div className="card-name-col">
                       <div className="card-name">{item.name || '—'}</div>
                       {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
                     </div>
                     <div className="card-price-col">
-                      <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{hasPrice ? fmt(item.price) + '' : 'нет данных'}</div>
+                      <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{priceDisplay}</div>
                       <div className="card-currency">{item.currency || ''}</div>
                     </div>
-                    <div className="card-vol-col"><div className="card-vol">{hasPrice ? fmtVol(item.volume) : 'нет данных'}</div></div>
+                    <div className="card-vol-col"><div className="card-vol">{volDisplay}</div></div>
                   </div>
                 )
               }
               
               if (curType === '') {
                 if (type === 'bond') {
-                  const yieldColor = item.yield && item.yield > 0 ? 'var(--green2)' : (item.yield && item.yield < 0 ? '#EF4444' : 'var(--text2)')
-                  const yieldDisplay = item.yield != null ? `${item.yield}%` : '—'
                   return (
                     <div className={`card card-all${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
                       <div className="card-ticker-col">
                         <div className="card-stripe" style={{ background: stripe }} />
-                        <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
-                      </div>
-                      <div className="card-name-col">
-                        <div className="card-name">{item.name || '—'}</div>
-                        {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
-                      </div>
-                      <div className="card-extra-col"><div className="card-extra yield-val" style={{ color: yieldColor }}>{yieldDisplay}</div></div>
+                      <div><span className="card-ticker">{item.ticker}{curType === '' && <span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span>}</span></div>
+                    </div>
+                    <div className="card-name-col">
+                      <div className="card-name">{item.name || '—'}</div>
+                      {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
+                    </div>
+                    <div className="card-extra-col"><div className="card-extra yield-val" style={{ color: yieldColor }}>{yieldDisplay}</div></div>
                     </div>
                   )
                 }
@@ -557,13 +558,13 @@ export default function App() {
                     <div className={`card card-all${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
                       <div className="card-ticker-col">
                         <div className="card-stripe" style={{ background: stripe }} />
-                        <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                        <div><span className="card-ticker">{item.ticker}{curType === '' && <span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span>}</span></div>
                       </div>
                       <div className="card-name-col">
                         <div className="card-name">{item.name || '—'}</div>
                         {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
                       </div>
-                      <div className="card-extra-col"><div className="card-extra">{item.market_cap ? fmtVol(item.market_cap) : '—'}</div></div>
+                      <div className="card-extra-col"><div className="card-extra">{marketCapDisplay}</div></div>
                     </div>
                   )
                 }
@@ -572,13 +573,13 @@ export default function App() {
                     <div className="card card-all" key={item.ticker} onClick={() => openModal(item.ticker)}>
                       <div className="card-ticker-col">
                         <div className="card-stripe" style={{ background: stripe }} />
-                        <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
-                      </div>
-                      <div className="card-name-col">
-                        <div className="card-name">{item.name || '—'}</div>
-                      </div>
-                      <div className="card-extra-col" style={{ textAlign: 'right' }}>
-                        <div className="card-extra">{item.strike_price ? `${Number(item.strike_price).toLocaleString('ru')}` : '—'}</div>
+                      <div><span className="card-ticker">{item.ticker}{curType === '' && <span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span>}</span></div>
+                    </div>
+                    <div className="card-name-col">
+                      <div className="card-name">{item.name || '—'}</div>
+                    </div>
+                    <div className="card-extra-col" style={{ textAlign: 'right' }}>
+                      <div className="card-extra">{strikeDisplay}</div>
                       </div>
                     </div>
                   )
@@ -588,48 +589,35 @@ export default function App() {
                     <div className={`card card-all${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
                       <div className="card-ticker-col">
                         <div className="card-stripe" style={{ background: stripe }} />
-                        <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
-                      </div>
-                      <div className="card-name-col">
-                        <div className="card-name">{item.name || '—'}</div>
-                        {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
-                      </div>
-                      <div className="card-extra-col" style={{ textAlign: 'right' }}>
-                        <div className="card-extra">{hasPrice ? fmt(item.price) + '' : 'нет данных'}</div>
-                      </div>
-                    </div>
-                  )
-                }
-                return (
-                  <div className={`card${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
-                    <div className="card-ticker-col">
-                      <div className="card-stripe" style={{ background: stripe }} />
-                      <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                      <div><span className="card-ticker">{item.ticker}{curType === '' && <span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span>}</span></div>
                     </div>
                     <div className="card-name-col">
                       <div className="card-name">{item.name || '—'}</div>
                       {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
                     </div>
-                    <div className="card-extra-col"><div className="card-extra">—</div></div>
-                  </div>
-                )
+                    <div className="card-extra-col" style={{ textAlign: 'right' }}>
+                      <div className="card-extra">{priceDisplay}</div>
+                      </div>
+                    </div>
+                  )
+                }
               }
               
-                return (
-                  <div className={`card card-all${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
+              return (
+                <div className={`card card-all${!hasPrice ? ' no-price' : ''}`} key={item.ticker} onClick={() => openModal(item.ticker)}>
                   <div className="card-ticker-col">
                     <div className="card-stripe" style={{ background: stripe }} />
-                    <div><span className="card-ticker">{item.ticker}<span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span></span></div>
+                    <div><span className="card-ticker">{item.ticker}{curType === '' && <span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span>}</span></div>
                   </div>
                   <div className="card-name-col">
                     <div className="card-name">{item.name || '—'}</div>
                     {meta.length > 0 && <div className="card-meta">{meta.join(' · ')}</div>}
                   </div>
                   <div className="card-price-col">
-                    <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{hasPrice ? fmt(item.price) + '' : 'нет данных'}</div>
+                    <div className={`card-price${!hasPrice ? ' empty' : ''}`}>{priceDisplay}</div>
                     <div className="card-currency">{item.currency || ''}</div>
                   </div>
-                  <div className="card-vol-col"><div className="card-vol">{hasPrice ? fmtVol(item.volume) : 'нет данных'}</div></div>
+                  <div className="card-vol-col"><div className="card-vol">{volDisplay}</div></div>
                 </div>
               )
             })}
