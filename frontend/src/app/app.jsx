@@ -392,7 +392,7 @@ export default function App() {
             </div>
           </div>
           <div className="table-scroll">
-            <div className="table-header" style={{ gridTemplateColumns: curType === 'option' ? '200px 1fr 90px 90px' : curType === 'bond' ? '200px 1fr 90px 90px 100px' : curType === 'stock' ? '200px 1fr 90px 90px 100px' : curType === 'futures' ? '200px 1fr 90px 90px' : '200px 1fr 1fr' }}>
+            <div className="table-header" style={{ gridTemplateColumns: curType === 'option' ? '200px 1fr 90px 90px' : curType === 'bond' ? '200px 1fr 90px 90px 100px' : curType === 'stock' ? '200px 1fr 90px 90px 100px' : curType === 'futures' ? '200px 1fr 90px 90px' : '200px 1fr 70px 80px 50px' }}>
               {curType === 'option' ? (
                 <>
                   <div className="th">Инструмент</div>

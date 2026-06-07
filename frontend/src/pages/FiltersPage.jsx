@@ -221,7 +221,6 @@ export default function FiltersPage() {
             </div>
           </aside>
 
-          {/* СЕТКА С КАРТОЧКАМИ */}
           <div className="results-container">
             {error && <div style={{ color: 'red', textAlign: 'center', padding: '20px' }}>Ошибка: {error}</div>}
 
@@ -231,7 +230,6 @@ export default function FiltersPage() {
 
             {instruments.length > 0 && (
               <>
-                {/* Теперь сетка просто плавно затухает на opacity: 0.6 во время loading без прыгающих надписей */}
                 <div className={`results-grid ${loading ? 'loading-blur' : ''}`}>
                   {instruments.map((item, idx) => (
                     <button key={idx} className={`instrument-tile ${tileTone(item.change)}`} onClick={() => setActiveInstrument(item)}>

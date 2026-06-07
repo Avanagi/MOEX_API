@@ -712,7 +712,7 @@ select option {
 }
 
 .card-all {
-  grid-template-columns: 200px 1fr 1fr;
+  grid-template-columns: 200px 1fr 70px 80px 50px;
 }
 
 .card-all .card-extra-col {
