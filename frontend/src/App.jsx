@@ -1,8 +1,6 @@
-// frontend/src/App.jsx
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import FiltersPage from './pages/FiltersPage';
 
-// Бегущая строка с ЗАФИКСИРОВАННЫМИ изменениями (без Math.random())
 const tickerData = [
   ['¥', '10,435', 'down', '-2.4%'],
   ['₺', '1,56', 'down', '-2.1%'],

@@ -1092,7 +1092,6 @@ select option {
   opacity: 1;
 }
 
-/* THEME TOGGLE */
 .theme-toggle {
   position: fixed;
   top: 70px;
@@ -1114,13 +1113,12 @@ select option {
 
 .theme-toggle:hover {
   background: var(--accent);
-  color: var(--bg);
   border-color: var(--accent);
   transform: scale(1.1);
 }
 
 .theme-toggle:hover svg {
-  stroke: var(--bg);
+  stroke: var(--text);
 }
 
 @media (max-width: 960px) {
@@ -1132,7 +1130,6 @@ select option {
   }
 }
 
-/* SKELETON */
 .skel {
   height: 48px;
   background: var(--bg3);

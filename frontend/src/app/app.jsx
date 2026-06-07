@@ -225,11 +225,11 @@ export default function App() {
 
   function selectType(id) {
     setCurType(id); setCurPage(0)
-    if (id === 'bond') { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxV(''); setFSector('') }
-    else if (id === 'stock') { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxY(''); setFMinY(''); setFSector(''); setFOpt('') }
-    else if (id === 'futures') { setFMinS(''); setFMaxS(''); setFMinY(''); setFMaxY(''); setFSector(''); setFOpt('') }
-    else if (id === 'option') { setFMinP(''); setFMaxP(''); setFMinV(''); setFMaxY(''); setFMinY(''); setFSector('') }
-    else { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxY(''); setFMinY(''); setFSector(''); setFOpt('') }
+    if (id === 'bond') { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxV('') }
+    else if (id === 'stock') { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxY(''); setFMinY(''); setFOpt('') }
+    else if (id === 'futures') { setFMinS(''); setFMaxS(''); setFMinY(''); setFMaxY(''); setFOpt('') }
+    else if (id === 'option') { setFMinP(''); setFMaxP(''); setFMinV(''); setFMaxY(''); setFMinY('') }
+    else { setFMinS(''); setFMaxS(''); setFMinV(''); setFMaxY(''); setFMinY(''); setFOpt('') }
   }
   function selectSort(idx) { setSortKey(idx); setCurPage(0) }
   function applyFilters() { setCurPage(0) }
