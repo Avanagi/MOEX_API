@@ -1,0 +1,316 @@
+.maturity-date-filter {
+  padding: 4px 0;
+}
+
+/* ===== Label icon ===== */
+.maturity-date-filter-label {
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.maturity-date-filter-icon {
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+  /* Inherit color from parent via currentColor */
+  color: var(--accent, var(--red2));
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.maturity-date-filter-label:hover .maturity-date-filter-icon {
+  color: var(--accent, var(--red2));
+  transform: scale(1.1);
+}
+
+/* ===== Display pill ===== */
+.maturity-date-filter-display {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+}
+
+.maturity-date-filter-display.empty {
+  color: var(--text3);
+  font-weight: 400;
+}
+
+.maturity-date-filter-display-icon {
+  flex-shrink: 0;
+  color: var(--accent, var(--red2));
+  opacity: 0.7;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.maturity-date-filter-display:hover .maturity-date-filter-display-icon {
+  opacity: 1;
+}
+
+.maturity-date-filter-display::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent, var(--red2)), transparent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.maturity-date-filter-display:hover::before {
+  opacity: 0.04;
+}
+
+.maturity-date-filter-display:hover {
+  border-color: var(--border2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* ===== Presets ===== */
+.maturity-date-filter-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.maturity-preset-btn {
+  padding: 6px 12px;
+  border-radius: 32px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-family: var(--sans, sans-serif);
+  position: relative;
+  overflow: hidden;
+}
+
+.maturity-preset-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent, var(--red2));
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 32px;
+  pointer-events: none;
+}
+
+.maturity-preset-btn:hover {
+  border-color: var(--accent, var(--red2));
+  color: var(--accent, var(--red2));
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12);
+}
+
+.maturity-preset-btn:hover::before {
+  opacity: 0.06;
+}
+
+.maturity-preset-btn:active {
+  transform: translateY(0);
+}
+
+.maturity-preset-btn.active {
+  background: var(--accent, var(--red2));
+  color: #ffffff;
+  border-color: var(--accent, var(--red2));
+  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.2);
+  transform: translateY(-1px);
+}
+
+.maturity-preset-btn.active::before {
+  opacity: 0.1;
+}
+
+.maturity-preset-btn.active:hover {
+  box-shadow: 0 3px 14px rgba(220, 38, 38, 0.25);
+}
+
+/* ===== Custom date inputs ===== */
+.maturity-date-filter-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.maturity-date-field {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.maturity-date-field.focused {
+  transform: scale(1.01);
+}
+
+.maturity-date-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: var(--sans, sans-serif);
+  height: 38px;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  /* Prevent default browser styling */
+  -moz-appearance: none;
+}
+
+/* Calendar picker indicator - the key fix for dark theme */
+.maturity-date-input::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  /* Invert color for visibility on both themes */
+  filter: brightness(0.5) invert(0.5) contrast(0.9);
+  -webkit-filter: brightness(0.5) invert(0.5) contrast(0.9);
+}
+
+[data-theme="dark"] .maturity-date-input::-webkit-calendar-picker-indicator {
+  filter: brightness(2) invert(1) contrast(1.2);
+  -webkit-filter: brightness(2) invert(1) contrast(1.2);
+  opacity: 0.8;
+}
+
+/* Firefox */
+.maturity-date-input::-moz-focus-inner {
+  border: 0;
+  outline: none;
+}
+
+/* Firefox calendar indicator (limited control) */
+.maturity-date-input::-moz-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
+  /* Firefox doesn't support filter on this, use color as fallback */
+  color: var(--text3);
+}
+
+.maturity-date-input:hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  filter: brightness(0.4) invert(0.4) contrast(1);
+  -webkit-filter: brightness(0.4) invert(0.4) contrast(1);
+}
+
+[data-theme="dark"] .maturity-date-input:hover::-webkit-calendar-picker-indicator {
+  filter: brightness(1.5) invert(1) contrast(1.5);
+  -webkit-filter: brightness(1.5) invert(1) contrast(1.5);
+  opacity: 1;
+}
+
+.maturity-date-input:hover {
+  border-color: var(--border2);
+  background: var(--bg4);
+}
+
+.maturity-date-input:focus {
+  outline: none;
+  border-color: var(--accent, var(--red2));
+  box-shadow: 0 0 0 3px var(--accent-soft, rgba(220, 38, 38, 0.1));
+  background: var(--bg2);
+}
+
+[data-theme="dark"] .maturity-date-input:focus {
+  box-shadow: 0 0 0 3px var(--accent-soft, rgba(225, 6, 44, 0.15));
+}
+
+.maturity-date-input::placeholder {
+  color: var(--text3);
+  opacity: 0.6;
+}
+
+.maturity-date-sep {
+  font-size: 16px;
+  color: var(--text3);
+  font-weight: 300;
+  flex-shrink: 0;
+  margin: 0 2px;
+  user-select: none;
+  line-height: 1;
+  padding-top: 2px;
+}
+
+/* ===== Dark theme overrides ===== */
+[data-theme="dark"] .maturity-date-filter-display {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .maturity-date-filter-display:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .maturity-preset-btn:hover {
+  box-shadow: 0 2px 10px rgba(225, 6, 44, 0.15);
+}
+
+[data-theme="dark"] .maturity-preset-btn.active {
+  box-shadow: 0 2px 12px rgba(225, 6, 44, 0.25);
+}
+
+[data-theme="dark"] .maturity-date-input {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .maturity-date-input:hover {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 960px) {
+  .maturity-date-filter-presets {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .maturity-date-filter-presets::-webkit-scrollbar {
+    display: none;
+  }
+
+  .maturity-date-filter-custom {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .maturity-date-sep {
+    display: none;
+  }
+
+  .maturity-date-field {
+    width: 100%;
+  }
+
+  .maturity-date-input {
+    height: 42px;
+  }
+}

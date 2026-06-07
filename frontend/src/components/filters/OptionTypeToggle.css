@@ -1,0 +1,102 @@
+.option-type-toggle {
+  padding: 4px 0;
+}
+
+.option-type-toggle-label {
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.option-type-toggle-label::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent, var(--red2));
+  opacity: 0.6;
+}
+
+.option-type-toggle-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.option-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--sans, sans-serif);
+  position: relative;
+  overflow: hidden;
+}
+
+.option-toggle-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 12px;
+}
+
+.option-toggle-btn:hover {
+  border-color: var(--border2);
+  background: var(--bg4);
+  color: var(--text);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.option-toggle-btn:hover .option-toggle-dot {
+  transform: scale(1.3);
+  box-shadow: 0 0 6px currentColor;
+}
+
+.option-toggle-btn.active {
+  border-color: var(--opt-color, var(--accent, var(--red2)));
+  background: color-mix(in srgb, var(--opt-color, var(--accent, var(--red2))) 10%, var(--bg3));
+  color: var(--opt-color, var(--accent, var(--red2)));
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--opt-color, var(--accent, var(--red2))) 15%, transparent);
+}
+
+.option-toggle-btn.active::before {
+  opacity: 0.06;
+  background: var(--opt-color, var(--accent, var(--red2)));
+}
+
+.option-toggle-btn.active:hover {
+  background: color-mix(in srgb, var(--opt-color, var(--accent, var(--red2))) 15%, var(--bg3));
+}
+
+.option-toggle-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Dark theme */
+[data-theme="dark"] .option-toggle-btn:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .option-toggle-btn.active {
+  background: color-mix(in srgb, var(--opt-color, var(--accent, var(--red2))) 18%, var(--bg3));
+}

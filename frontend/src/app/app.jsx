@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ThemeToggle from '../components/common/ThemeToggle.jsx'
+import MaturityDateFilter from '../components/filters/MaturityDateFilter.jsx'
+import OptionTypeToggle from '../components/filters/OptionTypeToggle.jsx'
 
 const API = '/api'
 
@@ -350,20 +352,8 @@ export default function App() {
               <span className="adv-arrow">▾</span> Расширенные фильтры
             </button>}
             {showAdv && <div className="adv-body">
-              {curType === 'option' && <div className="f-group"><div className="f-label">Тип опциона</div>
-                <select value={fOpt} onChange={e => setFOpt(e.target.value)}>
-                  <option value="">Все</option>
-                  <option value="C">Call</option>
-                  <option value="P">Put</option>
-                </select>
-              </div>}
-              {curType === 'bond' && <div className="f-group"><div className="f-label">Срок погашения</div>
-                <div className="f-row">
-                  <input type="date" style={{ fontSize: '11px' }} value={fD1} onChange={e => setFD1(e.target.value)} />
-                  <span className="f-sep">—</span>
-                  <input type="date" style={{ fontSize: '11px' }} value={fD2} onChange={e => setFD2(e.target.value)} />
-                </div>
-              </div>}
+              {curType === 'option' && <OptionTypeToggle value={fOpt} onChange={setFOpt} />}
+              {curType === 'bond' && <MaturityDateFilter value={[fD1, fD2]} onChange={([from, to]) => { setFD1(from); setFD2(to) }} />}
               {curType === 'bond' && <div className="f-group"><div className="f-label">Доходность, % (доп.)</div>
                 <div className="f-row">
                 <input type="number" placeholder="от" step="0.1" min="0" value={fMinY} onChange={e => setFMinY(e.target.value)} />
