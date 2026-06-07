@@ -20,6 +20,7 @@ def mock_db_cursor():
     """Фикстура для мока соединения и курсора БД."""
     conn = MagicMock()
     cursor = MagicMock()
+    cursor.fetchone.return_value = (0,)
     conn.cursor.return_value = cursor
     cursor.close = MagicMock()
     conn.close = MagicMock()
@@ -105,7 +106,6 @@ class TestEdgeCases:
         conn = MagicMock()
         cursor = MagicMock()
         cursor.fetchall.return_value = []
-        cursor.fetchone.return_value = None
         cursor.close = MagicMock()
         conn.cursor.return_value = cursor
         conn.close = MagicMock()
@@ -253,3 +253,4 @@ class TestRateLimiting:
         assert response.status_code == 200
         assert len(response.json()) <= 50
         assert actual_limit == 50, f"LIMIT должен быть 50, а не {actual_limit}"
+

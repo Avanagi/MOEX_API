@@ -3,6 +3,7 @@
 Проверяет загрузку переменных окружения и значения по умолчанию.
 """
 import pytest
+import os
 
 from app.config import Settings
 
@@ -17,7 +18,16 @@ def env_settings(tmp_path):
     return env_file
 
 
-def test_settings_default_values():
+@pytest.fixture
+def clean_db_env(monkeypatch):
+    """Очищает переменные окружения DB_* перед тестом."""
+    for key in list(os.environ.keys()):
+        if key.startswith("DB_"):
+            monkeypatch.delenv(key)
+    yield
+
+
+def test_settings_default_values(clean_db_env):
     """Проверяет что Settings инициализируется с корректными значениями по умолчанию."""
     settings = Settings()
     assert settings.db_host == ""
@@ -27,7 +37,7 @@ def test_settings_default_values():
     assert settings.db_name == "moex"
 
 
-def test_settings_loads_from_env(env_settings):
+def test_settings_loads_from_env(clean_db_env, env_settings):
     """Проверяет что Settings загружает значения из .env файла."""
     settings = Settings(_env_file=env_settings)
     assert settings.db_host == "testhost"
@@ -37,7 +47,7 @@ def test_settings_loads_from_env(env_settings):
     assert settings.db_name == "testdb"
 
 
-def test_settings_env_port_type_conversion(env_settings):
+def test_settings_env_port_type_conversion(clean_db_env, env_settings):
     """Проверяет что порт из .env (строка) корректно преобразуется в int."""
     settings = Settings(_env_file=env_settings)
     assert isinstance(settings.db_port, int)

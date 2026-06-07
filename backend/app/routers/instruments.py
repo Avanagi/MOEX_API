@@ -35,7 +35,7 @@ SELECT_FIELDS = """
 async def get_instruments(filters: InstrumentFilter = Depends()):
 
     # Формируем ключ кэша без offset — кэшируем только данные, не пагинацию
-    cache_key_no_offset = cache.make_key(
+    _cache_key_no_offset = cache.make_key(
         "instruments",
         type=filters.type,
         sector=filters.sector,
@@ -134,7 +134,7 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
         query += " AND price IS NOT NULL"
 
     # Считаем общее количество записей ДО пагинации
-    count_query = f"SELECT COUNT(*) FROM instruments WHERE 1=1"
+    count_query = "SELECT COUNT(*) FROM instruments WHERE 1=1"
     count_params = []
     
     if filters.type:
@@ -178,7 +178,7 @@ async def get_instruments(filters: InstrumentFilter = Depends()):
         count_params.append(filters.max_volume)
     
     cursor.execute(count_query, count_params)
-    total = cursor.fetchone()[0]
+    _total = cursor.fetchone()[0]
     
     # Добавляем сортировку с явным указанием типов для NULL-значений
     # CASE WHEN ... END ASC — сначала non-NULL, потом NULL
