@@ -689,7 +689,7 @@ export default function App() {
                 <div className="modal-details">
                   {modal.issuer && <div className="modal-detail-item"><div className="modal-detail-label">Эмитент</div><div className="modal-detail-val">{modal.issuer}</div></div>}
                   {modal.sector && <div className="modal-detail-item"><div className="modal-detail-label">Сектор</div><div className="modal-detail-val">{modal.sector}</div></div>}
-                  {modal.yield && <div className="modal-detail-item"><div className="modal-detail-label">Доходность</div><div className="modal-detail-val">{modal.yield}%</div></div>}
+                  {modal.yield !== undefined && modal.yield !== null && (<div className="modal-detail-item"><div className="modal-detail-label">Доходность</div><div className="modal-detail-val">{modal.yield}%</div></div>)}
                   {modal.maturity_date && <div className="modal-detail-item"><div className="modal-detail-label">Погашение</div><div className="modal-detail-val">{modal.maturity_date}</div></div>}
                   {modal.market_cap && <div className="modal-detail-item"><div className="modal-detail-label">Капитализация</div><div className="modal-detail-val">{fmtVol(modal.market_cap)}</div></div>}
                   {modal.strike_price && <div className="modal-detail-item"><div className="modal-detail-label">Страйк</div><div className="modal-detail-val">{Number(modal.strike_price).toLocaleString('ru')}</div></div>}
