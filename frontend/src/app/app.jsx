@@ -140,6 +140,12 @@ export default function App() {
         const p = new URLSearchParams()
         if (curType) p.set('type', curType)
         if (curType === 'option') {
+          if (fMinP) p.set('min_price', fMinP)
+          if (fMaxP) p.set('max_price', fMaxP)
+          if (fMinS) p.set('min_strike', fMinS)
+          if (fMaxS) p.set('max_strike', fMaxS)
+          if (fOpt) p.set('option_type', fOpt)
+          p.set('show_null_price', showNullPriceFilter ? '1' : '0')
         } else if (curType === 'futures') {
           if (fMinP) p.set('min_price', fMinP)
           if (fMaxP) p.set('max_price', fMaxP)
@@ -168,11 +174,15 @@ export default function App() {
         const countP = new URLSearchParams()
         if (curType) countP.set('type', curType)
         if (curType === 'option') {
-          // strike filters applied unconditionally below
+          if (fMinP) countP.set('min_price', fMinP)
+          if (fMaxP) countP.set('max_price', fMaxP)
+          if (fMinS) countP.set('min_strike', fMinS)
+          if (fMaxS) countP.set('max_strike', fMaxS)
+          if (fOpt) countP.set('option_type', fOpt)
+          countP.set('show_null_price', showNullPriceFilter ? '1' : '0')
         } else if (curType === 'futures') {
           if (fMinP) countP.set('min_price', fMinP)
           if (fMaxP) countP.set('max_price', fMaxP)
-          // volume filters applied unconditionally below
         } else {
           if (fMinP) countP.set('min_price', fMinP)
           if (fMaxP) countP.set('max_price', fMaxP)
@@ -312,13 +322,22 @@ export default function App() {
           <div className="s-section">
             <div className="s-label">Основные фильтры</div>
             {curType === 'option' ? (
-              <div className="f-group"><div className="f-label">Страйк</div>
-                <div className="f-row">
-                  <input type="number" placeholder="от" min="0" value={fMinS} onChange={e => setFMinS(e.target.value)} />
-                  <span className="f-sep">—</span>
-                  <input type="number" placeholder="до" min="0" value={fMaxS} onChange={e => setFMaxS(e.target.value)} />
+              <>
+                <div className="f-group"><div className="f-label">Цена</div>
+                  <div className="f-row">
+                    <input type="number" placeholder="от" min="0" value={fMinP} onChange={e => setFMinP(e.target.value)} />
+                    <span className="f-sep">—</span>
+                    <input type="number" placeholder="до" min="0" value={fMaxP} onChange={e => setFMaxP(e.target.value)} />
+                  </div>
                 </div>
-              </div>
+                <div className="f-group"><div className="f-label">Страйк</div>
+                  <div className="f-row">
+                    <input type="number" placeholder="от" min="0" value={fMinS} onChange={e => setFMinS(e.target.value)} />
+                    <span className="f-sep">—</span>
+                    <input type="number" placeholder="до" min="0" value={fMaxS} onChange={e => setFMaxS(e.target.value)} />
+                  </div>
+                </div>
+              </>
             ) : (
               <div className="f-group"><div className="f-label">Цена</div>
                 <div className="f-row">
@@ -329,7 +348,7 @@ export default function App() {
               </div>
             )}
             <div className="f-group" style={{ marginTop: '8px' }}>
-              {curType !== 'option' && <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '11px', color: 'var(--text2)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '11px', color: 'var(--text2)' }}>
                 <input
                   type="checkbox"
                   checked={showNullPriceFilter}
@@ -337,7 +356,7 @@ export default function App() {
                   style={{ width: 'auto', accentColor: 'var(--accent)' }}
                 />
                 Показывать инструменты без цены
-              </label>}
+              </label>
             </div>
             {curType === 'bond' && <button type="button" className={`adv-toggle${showAdv ? ' open' : ''}`} onClick={() => setShowAdv(v => !v)}>
               <span className="adv-arrow">▾</span> Расширенные фильтры
