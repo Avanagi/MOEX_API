@@ -87,7 +87,7 @@ export default function App() {
   const searchTimer = useRef(null)
   const toastTimer = useRef(null)
   const SORTS = curType === 'option'
-    ? ALL_SORTS.filter(s => s.sort === 'ticker' || s.sort === 'strike_price')
+    ? ALL_SORTS.filter(s => ['ticker', 'price', 'strike_price'].includes(s.sort))
     : curType === 'stock'
     ? ALL_SORTS.filter(s => ['ticker', 'price', 'volume', 'market_cap'].includes(s.sort))
     : curType === 'bond'
@@ -140,7 +140,6 @@ export default function App() {
         const p = new URLSearchParams()
         if (curType) p.set('type', curType)
         if (curType === 'option') {
-          // strike filters applied unconditionally below
         } else if (curType === 'futures') {
           if (fMinP) p.set('min_price', fMinP)
           if (fMaxP) p.set('max_price', fMaxP)
@@ -398,7 +397,7 @@ export default function App() {
                   <div className="th">Инструмент</div>
                   <div className="th">Тип</div>
                   <div className="th">Страйк</div>
-                  <div className="th">Валюта</div>
+                  <div className="th">Цена</div>
                 </>
               ) : curType === 'bond' ? (
                 <>
@@ -456,20 +455,38 @@ export default function App() {
               const optionColor = OPTION_TYPE_COLOR[item.option_type] || 'var(--text2)'
               
               if (curType === 'option') {
+                const hasPrice = item.price !== null && item.price !== undefined && item.price !== '';
                 return (
-                  <div className="card card-option" key={item.ticker} onClick={() => openModal(item.ticker)}>
+                  <div 
+                    className={`card${!hasPrice ? ' no-price' : ''} card-option`} 
+                    key={item.ticker} 
+                    onClick={() => openModal(item.ticker)}
+                  >
                     <div className="card-ticker-col">
                       <div className="card-stripe" style={{ background: stripe }} />
-                      <div><span className="card-ticker">{item.ticker}{curType === '' && <span className={`card-badge ${BADGE_CLASS[type] || ''}`}>{TYPE_LABEL[type] || type}</span>}</span></div>
+                      <div>
+                        <span className="card-ticker">
+                          {item.ticker}
+                          {curType === '' && (
+                            <span className={`card-badge ${BADGE_CLASS[type] || ''}`}>
+                              {TYPE_LABEL[type] || type}
+                            </span>
+                          )}
+                        </span>
+                      </div>
                     </div>
                     <div className="card-name-col">
-                      <div className="card-name" style={{ color: optionColor, fontWeight: 600 }}>{optionLabel}</div>
+                      <div className="card-name" style={{ color: optionColor, fontWeight: 600 }}>
+                        {optionLabel}
+                      </div>
                     </div>
                     <div className="card-price-col" style={{ textAlign: 'right', paddingLeft: '4px' }}>
                       <div className="card-price">{strikeDisplay}</div>
                     </div>
                     <div className="card-extra-col" style={{ textAlign: 'right', paddingRight: '4px' }}>
-                      <div className="card-extra">{item.currency || '—'}</div>
+                      <div className={`card-extra${!hasPrice ? ' empty' : ''}`}>
+                        {item.price || 'нет данных'}
+                      </div>
                     </div>
                   </div>
                 )
